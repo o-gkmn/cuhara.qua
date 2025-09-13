@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  postgres-primary:
+    build: ./postgres-primary
+    container_name: postgres-primary
+    environment:
+      POSTGRES_DB: cuhara_qua_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_INITDB_ARGS: "--auth-host=md5"
+    ports:
+      - 5432:5432
+    networks:
+      - cuhara-qua-db-network
+    volumes:
+      - postgres-primary-data:/var/lib/postgresql/data
+      - ./postgres-primary/config/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./postgres-primary/config/pg_hba.conf:/etc/postgresql/pg_hba.conf
+    command: >
+      postgres -c config_file=/etc/postgresql/postgresql.conf -c hba_file=/etc/postgresql/pg_hba.conf
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  postgres-replica:
+    build: ./postgres-replica
+    container_name: postgres-replica
+    user: "0:0"
+    environment:
+      POSTGRES_DB: cuhara_qua_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGUSER: postgres
+      POSTGRES_PRIMARY_HOST: postgres-primary
+      POSTGRES_PRIMARY_PORT: 5432
+      POSTGRES_REPLICA_USER: replica
+      POSTGRES_REPLICA_PASSWORD: replica
+    ports:
+      - 5433:5432
+    networks:
+      - cuhara-qua-db-network
+    volumes:
+      - postgres-replica-data:/var/lib/postgresql/data
+    depends_on:
+      postgres-primary:
+        condition: service_healthy
+    command: |
+      bash -c '
+        if [ ! -f /var/lib/postgresql/data/PG_VERSION ]; then
+          echo "Initializing replica from primary...";
+          chown -R postgres:postgres /var/lib/postgresql/data;
+          chmod 0700 /var/lib/postgresql/data;
+          PGPASSWORD=replica pg_basebackup -h postgres-primary -D /var/lib/postgresql/data -U replica -P -R;
+          echo "hot_standby = on" >> /var/lib/postgresql/data/postgresql.conf;
+          echo "primary_conninfo = '\''host=postgres-primary port=5432 user=replica password=replica application_name=replica1'\''" > /var/lib/postgresql/data/postgresql.auto.conf;
+          echo "Replica initialization complete!";
+        fi;
+        exec docker-entrypoint.sh postgres
+      '
+
+networks:
+  cuhara-qua-db-network:
+    driver: bridge
+
+volumes:
+  postgres-primary-data:
+  postgres-replica-data:
