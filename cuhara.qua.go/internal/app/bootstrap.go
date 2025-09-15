@@ -3,8 +3,11 @@ package app
 import (
 	"gorm.io/gorm"
 
+	authqry "cuhara.qua.go/internal/auth/application/query"
 	"cuhara.qua.go/internal/common/cqrs"
+	"cuhara.qua.go/internal/infra/config"
 	"cuhara.qua.go/internal/infra/db"
+	userread "cuhara.qua.go/internal/readmodel/user"
 	rolecmd "cuhara.qua.go/internal/roles/application/command"
 	roleinfra "cuhara.qua.go/internal/roles/infrastructure"
 	tennantcmd "cuhara.qua.go/internal/tennants/application/command"
@@ -34,6 +37,16 @@ func BuildCommandBus(deps Deps) *cqrs.CommandBus {
 	cqrs.Register(cb, tennantcmd.CreateTennantCommandType, createTennantHandler)
 
 	return cb
+}
+
+func BuildQueryBus(deps Deps, cfg *config.Config) *cqrs.QueryBus {
+	qb := cqrs.NewQueryBus()
+
+	userRepo := userread.NewUserReadRepository(deps.ReadDB)
+	loginHandler := authqry.NewLoginHandler(userRepo, cfg)
+	cqrs.RegisterQuery(qb, authqry.LoginQueryType, loginHandler)
+
+	return qb
 }
 
 func BuildDeps(writeDBURL, readDBUrl string) (Deps, error) {

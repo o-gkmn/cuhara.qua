@@ -45,7 +45,8 @@ func main() {
 	defer sqlWriteDb.Close()
 
 	cb := app.BuildCommandBus(deps)
-	router := app.NewRouter(cb)
+	qb := app.BuildQueryBus(deps, &cfg)
+	router := app.NewRouter(cb, qb)
 
 	srv := infra.NewServer(cfg, router)
 	log.Printf("INFO: Server starting on %s", cfg.Addr)

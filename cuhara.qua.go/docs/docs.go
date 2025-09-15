@@ -15,6 +15,39 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/auth/login": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Login user with email",
+                "parameters": [
+                    {
+                        "description": " ",
+                        "name": "auth",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/cuhara_qua_go_internal_auth_application_query.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/cuhara_qua_go_internal_auth_application_query.LoginResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/roles": {
             "post": {
                 "consumes": [
@@ -116,6 +149,22 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "cuhara_qua_go_internal_auth_application_query.LoginRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
+        "cuhara_qua_go_internal_auth_application_query.LoginResponse": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
         "cuhara_qua_go_internal_roles_application_command.CreateRoleRequest": {
             "type": "object",
             "required": [

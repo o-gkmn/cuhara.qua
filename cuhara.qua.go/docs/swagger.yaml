@@ -1,5 +1,15 @@
 basePath: /api/v1
 definitions:
+  cuhara_qua_go_internal_auth_application_query.LoginRequest:
+    properties:
+      email:
+        type: string
+    type: object
+  cuhara_qua_go_internal_auth_application_query.LoginResponse:
+    properties:
+      token:
+        type: string
+    type: object
   cuhara_qua_go_internal_roles_application_command.CreateRoleRequest:
     properties:
       name:
@@ -66,6 +76,27 @@ info:
   title: Cuhara QUA API
   version: "1.0"
 paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: body
+        name: auth
+        required: true
+        schema:
+          $ref: '#/definitions/cuhara_qua_go_internal_auth_application_query.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/cuhara_qua_go_internal_auth_application_query.LoginResponse'
+      summary: Login user with email
+      tags:
+      - auth
   /roles:
     post:
       consumes:

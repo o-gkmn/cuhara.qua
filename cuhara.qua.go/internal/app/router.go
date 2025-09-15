@@ -7,13 +7,14 @@ import (
 	"github.com/go-chi/chi/middleware"
 	httpSwagger "github.com/swaggo/http-swagger"
 
-	"cuhara.qua.go/internal/common/cqrs"
+	authhttp "cuhara.qua.go/internal/auth/interface/http"
+	cqrs "cuhara.qua.go/internal/common/cqrs"
 	roleshttp "cuhara.qua.go/internal/roles/interface/http"
 	tennanthttp "cuhara.qua.go/internal/tennants/interface/http"
 	usershttp "cuhara.qua.go/internal/users/interface/http"
 )
 
-func NewRouter(cb *cqrs.CommandBus) http.Handler {
+func NewRouter(cb *cqrs.CommandBus, qb *cqrs.QueryBus) http.Handler {
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
@@ -37,6 +38,9 @@ func NewRouter(cb *cqrs.CommandBus) http.Handler {
 
 	tc := tennanthttp.NewTennantsController(cb)
 	tennanthttp.RegisterTennantRoutes(r, tc)
+
+	ac := authhttp.NewAuthController(qb)
+	authhttp.RegisterAuthRoutes(r, ac)
 
 	return r
 }
