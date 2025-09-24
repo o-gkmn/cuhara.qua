@@ -1,6 +1,10 @@
-.PHONY: swag
-swag:
-	swag init -g cmd/api/main.go -o docs --parseDependency --parseInternal
+.PHONY: docs
+docs:
+	@echo "Generating Swagger documentation..."
+	swagger generate model \
+  	--spec=docs/swagger.yml \
+  	--model-package=internal/types
+	@echo "Swagger documentation generated successfully"
 
 .PHONY: run
 run:
@@ -10,14 +14,6 @@ run:
 build:
 	go build -o bin/api cmd/api/main.go
 
-.PHONY: start
-start:
-	swag init -g cmd/api/main.go -o docs --parseDependency --parseInternal
-	go run cmd/api/main.go
-
 .PHONY: serve
 serve:
-	@echo "Generating Swagger documentation..."
-	@swag init -g cmd/api/main.go -o docs --parseDependency --parseInternal
-	@echo "Starting application..."
-	@go run cmd/api/main.go
+	make docs && make run

@@ -1,0 +1,218 @@
+swagger: "2.0"
+info:
+  title: HTTP Error Models
+  version: 0.1.0
+  description: Only HTTP error models retained
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /api/v1/auth/login:
+    post:
+      tags:
+        - auth
+      summary: Login
+      description: Login to the system
+      parameters:
+        - name: login
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/loginRequest"
+      responses:
+        200:
+          description: Login successful
+          schema:
+            $ref: "#/definitions/loginResponse"
+
+  /api/v1/auth/register:
+    post:
+      tags:
+        - auth
+      summary: Register
+      description: Register a new user
+      parameters:
+        - name: register
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/registerRequest"
+      responses:
+        200:
+          description: Register successful
+          schema:
+            $ref: "#/definitions/registerResponse"
+
+  /api/v1/users:
+    get:
+      tags:
+        - users
+      summary: Get users
+      description: Get all users
+      responses:
+        200:
+          description: Users fetched successfully
+          schema:
+            $ref: "#/definitions/userResponse"
+
+    put:
+      tags:
+        - users
+      summary: Update user
+      description: Update a user
+      parameters:
+        - name: updateUser
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/updateUserRequest"
+      responses:
+        200:
+          description: User updated successfully
+          schema:
+            $ref: "#/definitions/updateUserResponse"
+
+definitions:
+  updateUserRequest:
+    type: object
+    required:
+      - id
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      email:
+        type: string
+      vscAccount:
+        type: string
+      role:
+        type: object
+        required:
+          - id
+        properties:
+          id:
+            type: integer
+
+  updateUserResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+
+  userResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      email:
+        type: string
+      vscAccount:
+        type: string
+
+  loginRequest:
+    type: object
+    required:
+      - email
+      - password
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+
+  loginResponse:
+    type: object
+    properties:
+      token:
+        type: string
+
+  registerRequest:
+    type: object
+    required:
+      - name
+      - email
+      - password
+      - vscAccount
+      - roleID
+      - tenantID
+    properties:
+      name:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      vscAccount:
+        type: string
+      roleID:
+        type: integer
+      tenantID:
+        type: integer
+
+  registerResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+
+  httpValidationErrorDetail:
+    type: object
+    required:
+      - key
+      - in
+      - error
+    properties:
+      error:
+        description: Error describing field validation failure
+        type: string
+      in:
+        description: Indicates how the invalid field was provided
+        type: string
+      key:
+        description: Key of field failing validation
+        type: string
+
+  publicHttpError:
+    type: object
+    required:
+      - status
+      - type
+      - title
+    properties:
+      detail:
+        description: More detailed, human-readable, optional explanation of the error
+        type: string
+        example: User is lacking permission to access this resource
+      status:
+        description: HTTP status code returned for the error
+        type: integer
+        format: int64
+        maximum: 599
+        minimum: 100
+        x-go-name: Code
+        example: 403
+      title:
+        description: Short, human-readable description of the error
+        type: string
+        example: Forbidden
+      type:
+        description: Type of error returned, should be used for client-side error handling
+        type: string
+        example: generic
+
+  publicHttpValidationError:
+    type: object
+    required:
+      - validationErrors
+    allOf:
+      - $ref: "#/definitions/publicHttpError"
+    properties:
+      validationErrors:
+        description: List of errors received while validating payload against schema
+        type: array
+        items:
+          $ref: "#/definitions/httpValidationErrorDetail"
