@@ -13,6 +13,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/aarondl/null/v8"
 	"github.com/aarondl/sqlboiler/v4/boil"
 	"github.com/aarondl/sqlboiler/v4/queries"
 	"github.com/aarondl/sqlboiler/v4/queries/qm"
@@ -26,10 +27,10 @@ type Vote struct {
 	ID          int64     `boil:"id" json:"id" toml:"id" yaml:"id"`
 	VoterID     int64     `boil:"voter_id" json:"voter_id" toml:"voter_id" yaml:"voter_id"`
 	AnswerID    int64     `boil:"answer_id" json:"answer_id" toml:"answer_id" yaml:"answer_id"`
-	IsOwnerVote bool      `boil:"is_owner_vote" json:"is_owner_vote" toml:"is_owner_vote" yaml:"is_owner_vote"`
+	IsOwnerVote null.Bool `boil:"is_owner_vote" json:"is_owner_vote,omitempty" toml:"is_owner_vote" yaml:"is_owner_vote,omitempty"`
 	TenantID    int64     `boil:"tenant_id" json:"tenant_id" toml:"tenant_id" yaml:"tenant_id"`
 	CreatedAt   time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
-	UpdatedAt   time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
+	UpdatedAt   null.Time `boil:"updated_at" json:"updated_at,omitempty" toml:"updated_at" yaml:"updated_at,omitempty"`
 
 	R *voteR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L voteL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -77,18 +78,18 @@ var VoteWhere = struct {
 	ID          whereHelperint64
 	VoterID     whereHelperint64
 	AnswerID    whereHelperint64
-	IsOwnerVote whereHelperbool
+	IsOwnerVote whereHelpernull_Bool
 	TenantID    whereHelperint64
 	CreatedAt   whereHelpertime_Time
-	UpdatedAt   whereHelpertime_Time
+	UpdatedAt   whereHelpernull_Time
 }{
 	ID:          whereHelperint64{field: "\"votes\".\"id\""},
 	VoterID:     whereHelperint64{field: "\"votes\".\"voter_id\""},
 	AnswerID:    whereHelperint64{field: "\"votes\".\"answer_id\""},
-	IsOwnerVote: whereHelperbool{field: "\"votes\".\"is_owner_vote\""},
+	IsOwnerVote: whereHelpernull_Bool{field: "\"votes\".\"is_owner_vote\""},
 	TenantID:    whereHelperint64{field: "\"votes\".\"tenant_id\""},
 	CreatedAt:   whereHelpertime_Time{field: "\"votes\".\"created_at\""},
-	UpdatedAt:   whereHelpertime_Time{field: "\"votes\".\"updated_at\""},
+	UpdatedAt:   whereHelpernull_Time{field: "\"votes\".\"updated_at\""},
 }
 
 // VoteRels is where relationship names are stored.
@@ -170,7 +171,7 @@ var (
 	voteColumnsWithoutDefault = []string{"voter_id", "answer_id", "tenant_id"}
 	voteColumnsWithDefault    = []string{"id", "is_owner_vote", "created_at", "updated_at"}
 	votePrimaryKeyColumns     = []string{"id"}
-	voteGeneratedColumns      = []string{}
+	voteGeneratedColumns      = []string{"id"}
 )
 
 type (
@@ -1067,8 +1068,8 @@ func (o *Vote) Insert(ctx context.Context, exec boil.ContextExecutor, columns bo
 		if o.CreatedAt.IsZero() {
 			o.CreatedAt = currTime
 		}
-		if o.UpdatedAt.IsZero() {
-			o.UpdatedAt = currTime
+		if queries.MustTime(o.UpdatedAt).IsZero() {
+			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
 	}
 
@@ -1090,6 +1091,7 @@ func (o *Vote) Insert(ctx context.Context, exec boil.ContextExecutor, columns bo
 			voteColumnsWithoutDefault,
 			nzDefaults,
 		)
+		wl = strmangle.SetComplement(wl, voteGeneratedColumns)
 
 		cache.valueMapping, err = queries.BindMapping(voteType, voteMapping, wl)
 		if err != nil {
@@ -1149,7 +1151,7 @@ func (o *Vote) Update(ctx context.Context, exec boil.ContextExecutor, columns bo
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
-		o.UpdatedAt = currTime
+		queries.SetScanner(&o.UpdatedAt, currTime)
 	}
 
 	var err error
@@ -1166,6 +1168,7 @@ func (o *Vote) Update(ctx context.Context, exec boil.ContextExecutor, columns bo
 			voteAllColumns,
 			votePrimaryKeyColumns,
 		)
+		wl = strmangle.SetComplement(wl, voteGeneratedColumns)
 
 		if !columns.IsWhitelist() {
 			wl = strmangle.SetComplement(wl, []string{"created_at"})
@@ -1288,7 +1291,7 @@ func (o *Vote) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnCo
 		if o.CreatedAt.IsZero() {
 			o.CreatedAt = currTime
 		}
-		o.UpdatedAt = currTime
+		queries.SetScanner(&o.UpdatedAt, currTime)
 	}
 
 	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
@@ -1343,6 +1346,9 @@ func (o *Vote) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnCo
 			voteAllColumns,
 			votePrimaryKeyColumns,
 		)
+
+		insert = strmangle.SetComplement(insert, voteGeneratedColumns)
+		update = strmangle.SetComplement(update, voteGeneratedColumns)
 
 		if updateOnConflict && len(update) == 0 {
 			return errors.New("models: unable to upsert votes, could not build update column list")

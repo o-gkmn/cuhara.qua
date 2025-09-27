@@ -13,6 +13,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/aarondl/null/v8"
 	"github.com/aarondl/sqlboiler/v4/boil"
 	"github.com/aarondl/sqlboiler/v4/queries"
 	"github.com/aarondl/sqlboiler/v4/queries/qm"
@@ -27,7 +28,7 @@ type Tag struct {
 	Name      string    `boil:"name" json:"name" toml:"name" yaml:"name"`
 	TenantID  int64     `boil:"tenant_id" json:"tenant_id" toml:"tenant_id" yaml:"tenant_id"`
 	CreatedAt time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
-	UpdatedAt time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
+	UpdatedAt null.Time `boil:"updated_at" json:"updated_at,omitempty" toml:"updated_at" yaml:"updated_at,omitempty"`
 
 	R *tagR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L tagL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -68,13 +69,13 @@ var TagWhere = struct {
 	Name      whereHelperstring
 	TenantID  whereHelperint64
 	CreatedAt whereHelpertime_Time
-	UpdatedAt whereHelpertime_Time
+	UpdatedAt whereHelpernull_Time
 }{
 	ID:        whereHelperint64{field: "\"tags\".\"id\""},
 	Name:      whereHelperstring{field: "\"tags\".\"name\""},
 	TenantID:  whereHelperint64{field: "\"tags\".\"tenant_id\""},
 	CreatedAt: whereHelpertime_Time{field: "\"tags\".\"created_at\""},
-	UpdatedAt: whereHelpertime_Time{field: "\"tags\".\"updated_at\""},
+	UpdatedAt: whereHelpernull_Time{field: "\"tags\".\"updated_at\""},
 }
 
 // TagRels is where relationship names are stored.
@@ -137,7 +138,7 @@ var (
 	tagColumnsWithoutDefault = []string{"name", "tenant_id"}
 	tagColumnsWithDefault    = []string{"id", "created_at", "updated_at"}
 	tagPrimaryKeyColumns     = []string{"id"}
-	tagGeneratedColumns      = []string{}
+	tagGeneratedColumns      = []string{"id"}
 )
 
 type (
@@ -662,10 +663,10 @@ func (tagL) LoadPosts(ctx context.Context, e boil.ContextExecutor, singular bool
 
 	var resultSlice []*Post
 
-	var localJoinCols []int
+	var localJoinCols []int64
 	for results.Next() {
 		one := new(Post)
-		var localJoinCol int
+		var localJoinCol int64
 
 		err = results.Scan(&one.ID, &one.CreatorID, &one.SubtopicID, &one.TenantID, &one.CreatedAt, &one.UpdatedAt, &localJoinCol)
 		if err != nil {
@@ -968,8 +969,8 @@ func (o *Tag) Insert(ctx context.Context, exec boil.ContextExecutor, columns boi
 		if o.CreatedAt.IsZero() {
 			o.CreatedAt = currTime
 		}
-		if o.UpdatedAt.IsZero() {
-			o.UpdatedAt = currTime
+		if queries.MustTime(o.UpdatedAt).IsZero() {
+			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
 	}
 
@@ -991,6 +992,7 @@ func (o *Tag) Insert(ctx context.Context, exec boil.ContextExecutor, columns boi
 			tagColumnsWithoutDefault,
 			nzDefaults,
 		)
+		wl = strmangle.SetComplement(wl, tagGeneratedColumns)
 
 		cache.valueMapping, err = queries.BindMapping(tagType, tagMapping, wl)
 		if err != nil {
@@ -1050,7 +1052,7 @@ func (o *Tag) Update(ctx context.Context, exec boil.ContextExecutor, columns boi
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
-		o.UpdatedAt = currTime
+		queries.SetScanner(&o.UpdatedAt, currTime)
 	}
 
 	var err error
@@ -1067,6 +1069,7 @@ func (o *Tag) Update(ctx context.Context, exec boil.ContextExecutor, columns boi
 			tagAllColumns,
 			tagPrimaryKeyColumns,
 		)
+		wl = strmangle.SetComplement(wl, tagGeneratedColumns)
 
 		if !columns.IsWhitelist() {
 			wl = strmangle.SetComplement(wl, []string{"created_at"})
@@ -1189,7 +1192,7 @@ func (o *Tag) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnCon
 		if o.CreatedAt.IsZero() {
 			o.CreatedAt = currTime
 		}
-		o.UpdatedAt = currTime
+		queries.SetScanner(&o.UpdatedAt, currTime)
 	}
 
 	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
@@ -1244,6 +1247,9 @@ func (o *Tag) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnCon
 			tagAllColumns,
 			tagPrimaryKeyColumns,
 		)
+
+		insert = strmangle.SetComplement(insert, tagGeneratedColumns)
+		update = strmangle.SetComplement(update, tagGeneratedColumns)
 
 		if updateOnConflict && len(update) == 0 {
 			return errors.New("models: unable to upsert tags, could not build update column list")

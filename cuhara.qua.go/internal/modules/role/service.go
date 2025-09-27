@@ -11,6 +11,7 @@ import (
 	"cuhara.qua.go/internal/data/dto"
 	"cuhara.qua.go/internal/models"
 	"cuhara.qua.go/internal/util"
+	"github.com/aarondl/null/v8"
 	"github.com/aarondl/sqlboiler/v4/boil"
 	"github.com/aarondl/sqlboiler/v4/queries/qm"
 )
@@ -128,7 +129,7 @@ func (s *Service) Update(ctx context.Context, request dto.UpdateRoleRequest) (dt
 		return dto.UpdateRoleResponse{ID: role.ID}, nil
 	}
 
-	role.UpdatedAt = time.Now().UTC()
+	role.UpdatedAt = null.TimeFrom(time.Now().UTC())
 	_, err = role.Update(ctx, s.db, boil.Whitelist(
 		models.RoleColumns.Name,
 		models.RoleColumns.UpdatedAt,

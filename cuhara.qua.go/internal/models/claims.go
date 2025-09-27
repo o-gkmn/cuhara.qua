@@ -28,8 +28,8 @@ type Claim struct {
 	Name        string      `boil:"name" json:"name" toml:"name" yaml:"name"`
 	Description null.String `boil:"description" json:"description,omitempty" toml:"description" yaml:"description,omitempty"`
 	TenantID    int64       `boil:"tenant_id" json:"tenant_id" toml:"tenant_id" yaml:"tenant_id"`
-	CreatedAt   time.Time   `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
-	UpdatedAt   time.Time   `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
+	CreatedAt   null.Time   `boil:"created_at" json:"created_at,omitempty" toml:"created_at" yaml:"created_at,omitempty"`
+	UpdatedAt   null.Time   `boil:"updated_at" json:"updated_at,omitempty" toml:"updated_at" yaml:"updated_at,omitempty"`
 
 	R *claimR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L claimL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -130,15 +130,15 @@ var ClaimWhere = struct {
 	Name        whereHelperstring
 	Description whereHelpernull_String
 	TenantID    whereHelperint64
-	CreatedAt   whereHelpertime_Time
-	UpdatedAt   whereHelpertime_Time
+	CreatedAt   whereHelpernull_Time
+	UpdatedAt   whereHelpernull_Time
 }{
 	ID:          whereHelperint64{field: "\"claims\".\"id\""},
 	Name:        whereHelperstring{field: "\"claims\".\"name\""},
 	Description: whereHelpernull_String{field: "\"claims\".\"description\""},
 	TenantID:    whereHelperint64{field: "\"claims\".\"tenant_id\""},
-	CreatedAt:   whereHelpertime_Time{field: "\"claims\".\"created_at\""},
-	UpdatedAt:   whereHelpertime_Time{field: "\"claims\".\"updated_at\""},
+	CreatedAt:   whereHelpernull_Time{field: "\"claims\".\"created_at\""},
+	UpdatedAt:   whereHelpernull_Time{field: "\"claims\".\"updated_at\""},
 }
 
 // ClaimRels is where relationship names are stored.
@@ -220,7 +220,7 @@ var (
 	claimColumnsWithoutDefault = []string{"name", "tenant_id"}
 	claimColumnsWithDefault    = []string{"id", "description", "created_at", "updated_at"}
 	claimPrimaryKeyColumns     = []string{"id"}
-	claimGeneratedColumns      = []string{}
+	claimGeneratedColumns      = []string{"id"}
 )
 
 type (
@@ -760,10 +760,10 @@ func (claimL) LoadRoles(ctx context.Context, e boil.ContextExecutor, singular bo
 
 	var resultSlice []*Role
 
-	var localJoinCols []int
+	var localJoinCols []int64
 	for results.Next() {
 		one := new(Role)
-		var localJoinCol int
+		var localJoinCol int64
 
 		err = results.Scan(&one.ID, &one.Name, &one.TenantID, &one.CreatedAt, &one.UpdatedAt, &localJoinCol)
 		if err != nil {
@@ -890,10 +890,10 @@ func (claimL) LoadUsers(ctx context.Context, e boil.ContextExecutor, singular bo
 
 	var resultSlice []*User
 
-	var localJoinCols []int
+	var localJoinCols []int64
 	for results.Next() {
 		one := new(User)
-		var localJoinCol int
+		var localJoinCol int64
 
 		err = results.Scan(&one.ID, &one.Name, &one.Email, &one.VSCAccount, &one.RoleID, &one.TenantID, &one.CreatedAt, &one.UpdatedAt, &one.Password, &localJoinCol)
 		if err != nil {
@@ -1338,11 +1338,11 @@ func (o *Claim) Insert(ctx context.Context, exec boil.ContextExecutor, columns b
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
-		if o.CreatedAt.IsZero() {
-			o.CreatedAt = currTime
+		if queries.MustTime(o.CreatedAt).IsZero() {
+			queries.SetScanner(&o.CreatedAt, currTime)
 		}
-		if o.UpdatedAt.IsZero() {
-			o.UpdatedAt = currTime
+		if queries.MustTime(o.UpdatedAt).IsZero() {
+			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
 	}
 
@@ -1364,6 +1364,7 @@ func (o *Claim) Insert(ctx context.Context, exec boil.ContextExecutor, columns b
 			claimColumnsWithoutDefault,
 			nzDefaults,
 		)
+		wl = strmangle.SetComplement(wl, claimGeneratedColumns)
 
 		cache.valueMapping, err = queries.BindMapping(claimType, claimMapping, wl)
 		if err != nil {
@@ -1423,7 +1424,7 @@ func (o *Claim) Update(ctx context.Context, exec boil.ContextExecutor, columns b
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
-		o.UpdatedAt = currTime
+		queries.SetScanner(&o.UpdatedAt, currTime)
 	}
 
 	var err error
@@ -1440,6 +1441,7 @@ func (o *Claim) Update(ctx context.Context, exec boil.ContextExecutor, columns b
 			claimAllColumns,
 			claimPrimaryKeyColumns,
 		)
+		wl = strmangle.SetComplement(wl, claimGeneratedColumns)
 
 		if !columns.IsWhitelist() {
 			wl = strmangle.SetComplement(wl, []string{"created_at"})
@@ -1559,10 +1561,10 @@ func (o *Claim) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnC
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
-		if o.CreatedAt.IsZero() {
-			o.CreatedAt = currTime
+		if queries.MustTime(o.CreatedAt).IsZero() {
+			queries.SetScanner(&o.CreatedAt, currTime)
 		}
-		o.UpdatedAt = currTime
+		queries.SetScanner(&o.UpdatedAt, currTime)
 	}
 
 	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
@@ -1617,6 +1619,9 @@ func (o *Claim) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnC
 			claimAllColumns,
 			claimPrimaryKeyColumns,
 		)
+
+		insert = strmangle.SetComplement(insert, claimGeneratedColumns)
+		update = strmangle.SetComplement(update, claimGeneratedColumns)
 
 		if updateOnConflict && len(update) == 0 {
 			return errors.New("models: unable to upsert claims, could not build update column list")

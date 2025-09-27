@@ -97,9 +97,9 @@ func (s *Service) Register(ctx context.Context, request dto.RegisterRequest) (dt
 			Email:      request.Email,
 			Name:       request.Name,
 			VSCAccount: request.VscAccount,
+			Password:   hash,
 			RoleID:     request.RoleID,
 			TenantID:   request.TenantID,
-			Password:   hash,
 		}
 
 		if err := user.Insert(ctx, ce, boil.Infer()); err != nil {

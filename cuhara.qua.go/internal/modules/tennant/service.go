@@ -12,6 +12,7 @@ import (
 	"cuhara.qua.go/internal/models"
 	"cuhara.qua.go/internal/util"
 	"cuhara.qua.go/internal/util/db"
+	"github.com/aarondl/null/v8"
 	"github.com/aarondl/sqlboiler/v4/boil"
 )
 
@@ -133,7 +134,7 @@ func (s *Service) Update(ctx context.Context, request dto.UpdateTenantRequest) (
 		return dto.UpdateTenantResponse{ID: t.ID}, nil
 	}
 
-	t.UpdatedAt = time.Now().UTC()
+	t.UpdatedAt = null.TimeFrom(time.Now().UTC())
 	_, err = t.Update(ctx, s.db, boil.Whitelist(
 		models.TenantColumns.Name,
 		models.TenantColumns.UpdatedAt,

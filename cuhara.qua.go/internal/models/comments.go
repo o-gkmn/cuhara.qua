@@ -13,6 +13,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/aarondl/null/v8"
 	"github.com/aarondl/sqlboiler/v4/boil"
 	"github.com/aarondl/sqlboiler/v4/queries"
 	"github.com/aarondl/sqlboiler/v4/queries/qm"
@@ -29,7 +30,7 @@ type Comment struct {
 	AnswerID  int64     `boil:"answer_id" json:"answer_id" toml:"answer_id" yaml:"answer_id"`
 	TenantID  int64     `boil:"tenant_id" json:"tenant_id" toml:"tenant_id" yaml:"tenant_id"`
 	CreatedAt time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
-	UpdatedAt time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
+	UpdatedAt null.Time `boil:"updated_at" json:"updated_at,omitempty" toml:"updated_at" yaml:"updated_at,omitempty"`
 
 	R *commentR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L commentL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -80,7 +81,7 @@ var CommentWhere = struct {
 	AnswerID  whereHelperint64
 	TenantID  whereHelperint64
 	CreatedAt whereHelpertime_Time
-	UpdatedAt whereHelpertime_Time
+	UpdatedAt whereHelpernull_Time
 }{
 	ID:        whereHelperint64{field: "\"comments\".\"id\""},
 	Body:      whereHelperstring{field: "\"comments\".\"body\""},
@@ -88,7 +89,7 @@ var CommentWhere = struct {
 	AnswerID:  whereHelperint64{field: "\"comments\".\"answer_id\""},
 	TenantID:  whereHelperint64{field: "\"comments\".\"tenant_id\""},
 	CreatedAt: whereHelpertime_Time{field: "\"comments\".\"created_at\""},
-	UpdatedAt: whereHelpertime_Time{field: "\"comments\".\"updated_at\""},
+	UpdatedAt: whereHelpernull_Time{field: "\"comments\".\"updated_at\""},
 }
 
 // CommentRels is where relationship names are stored.
@@ -170,7 +171,7 @@ var (
 	commentColumnsWithoutDefault = []string{"body", "sender_id", "answer_id", "tenant_id"}
 	commentColumnsWithDefault    = []string{"id", "created_at", "updated_at"}
 	commentPrimaryKeyColumns     = []string{"id"}
-	commentGeneratedColumns      = []string{}
+	commentGeneratedColumns      = []string{"id"}
 )
 
 type (
@@ -1067,8 +1068,8 @@ func (o *Comment) Insert(ctx context.Context, exec boil.ContextExecutor, columns
 		if o.CreatedAt.IsZero() {
 			o.CreatedAt = currTime
 		}
-		if o.UpdatedAt.IsZero() {
-			o.UpdatedAt = currTime
+		if queries.MustTime(o.UpdatedAt).IsZero() {
+			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
 	}
 
@@ -1090,6 +1091,7 @@ func (o *Comment) Insert(ctx context.Context, exec boil.ContextExecutor, columns
 			commentColumnsWithoutDefault,
 			nzDefaults,
 		)
+		wl = strmangle.SetComplement(wl, commentGeneratedColumns)
 
 		cache.valueMapping, err = queries.BindMapping(commentType, commentMapping, wl)
 		if err != nil {
@@ -1149,7 +1151,7 @@ func (o *Comment) Update(ctx context.Context, exec boil.ContextExecutor, columns
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
-		o.UpdatedAt = currTime
+		queries.SetScanner(&o.UpdatedAt, currTime)
 	}
 
 	var err error
@@ -1166,6 +1168,7 @@ func (o *Comment) Update(ctx context.Context, exec boil.ContextExecutor, columns
 			commentAllColumns,
 			commentPrimaryKeyColumns,
 		)
+		wl = strmangle.SetComplement(wl, commentGeneratedColumns)
 
 		if !columns.IsWhitelist() {
 			wl = strmangle.SetComplement(wl, []string{"created_at"})
@@ -1288,7 +1291,7 @@ func (o *Comment) Upsert(ctx context.Context, exec boil.ContextExecutor, updateO
 		if o.CreatedAt.IsZero() {
 			o.CreatedAt = currTime
 		}
-		o.UpdatedAt = currTime
+		queries.SetScanner(&o.UpdatedAt, currTime)
 	}
 
 	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
@@ -1343,6 +1346,9 @@ func (o *Comment) Upsert(ctx context.Context, exec boil.ContextExecutor, updateO
 			commentAllColumns,
 			commentPrimaryKeyColumns,
 		)
+
+		insert = strmangle.SetComplement(insert, commentGeneratedColumns)
+		update = strmangle.SetComplement(update, commentGeneratedColumns)
 
 		if updateOnConflict && len(update) == 0 {
 			return errors.New("models: unable to upsert comments, could not build update column list")

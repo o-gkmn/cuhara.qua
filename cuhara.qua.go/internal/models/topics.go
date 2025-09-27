@@ -13,6 +13,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/aarondl/null/v8"
 	"github.com/aarondl/sqlboiler/v4/boil"
 	"github.com/aarondl/sqlboiler/v4/queries"
 	"github.com/aarondl/sqlboiler/v4/queries/qm"
@@ -27,7 +28,7 @@ type Topic struct {
 	Name      string    `boil:"name" json:"name" toml:"name" yaml:"name"`
 	TenantID  int64     `boil:"tenant_id" json:"tenant_id" toml:"tenant_id" yaml:"tenant_id"`
 	CreatedAt time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
-	UpdatedAt time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
+	UpdatedAt null.Time `boil:"updated_at" json:"updated_at,omitempty" toml:"updated_at" yaml:"updated_at,omitempty"`
 
 	R *topicR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L topicL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -68,13 +69,13 @@ var TopicWhere = struct {
 	Name      whereHelperstring
 	TenantID  whereHelperint64
 	CreatedAt whereHelpertime_Time
-	UpdatedAt whereHelpertime_Time
+	UpdatedAt whereHelpernull_Time
 }{
 	ID:        whereHelperint64{field: "\"topics\".\"id\""},
 	Name:      whereHelperstring{field: "\"topics\".\"name\""},
 	TenantID:  whereHelperint64{field: "\"topics\".\"tenant_id\""},
 	CreatedAt: whereHelpertime_Time{field: "\"topics\".\"created_at\""},
-	UpdatedAt: whereHelpertime_Time{field: "\"topics\".\"updated_at\""},
+	UpdatedAt: whereHelpernull_Time{field: "\"topics\".\"updated_at\""},
 }
 
 // TopicRels is where relationship names are stored.
@@ -137,7 +138,7 @@ var (
 	topicColumnsWithoutDefault = []string{"name", "tenant_id"}
 	topicColumnsWithDefault    = []string{"id", "created_at", "updated_at"}
 	topicPrimaryKeyColumns     = []string{"id"}
-	topicGeneratedColumns      = []string{}
+	topicGeneratedColumns      = []string{"id"}
 )
 
 type (
@@ -858,8 +859,8 @@ func (o *Topic) Insert(ctx context.Context, exec boil.ContextExecutor, columns b
 		if o.CreatedAt.IsZero() {
 			o.CreatedAt = currTime
 		}
-		if o.UpdatedAt.IsZero() {
-			o.UpdatedAt = currTime
+		if queries.MustTime(o.UpdatedAt).IsZero() {
+			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
 	}
 
@@ -881,6 +882,7 @@ func (o *Topic) Insert(ctx context.Context, exec boil.ContextExecutor, columns b
 			topicColumnsWithoutDefault,
 			nzDefaults,
 		)
+		wl = strmangle.SetComplement(wl, topicGeneratedColumns)
 
 		cache.valueMapping, err = queries.BindMapping(topicType, topicMapping, wl)
 		if err != nil {
@@ -940,7 +942,7 @@ func (o *Topic) Update(ctx context.Context, exec boil.ContextExecutor, columns b
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
-		o.UpdatedAt = currTime
+		queries.SetScanner(&o.UpdatedAt, currTime)
 	}
 
 	var err error
@@ -957,6 +959,7 @@ func (o *Topic) Update(ctx context.Context, exec boil.ContextExecutor, columns b
 			topicAllColumns,
 			topicPrimaryKeyColumns,
 		)
+		wl = strmangle.SetComplement(wl, topicGeneratedColumns)
 
 		if !columns.IsWhitelist() {
 			wl = strmangle.SetComplement(wl, []string{"created_at"})
@@ -1079,7 +1082,7 @@ func (o *Topic) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnC
 		if o.CreatedAt.IsZero() {
 			o.CreatedAt = currTime
 		}
-		o.UpdatedAt = currTime
+		queries.SetScanner(&o.UpdatedAt, currTime)
 	}
 
 	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
@@ -1134,6 +1137,9 @@ func (o *Topic) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnC
 			topicAllColumns,
 			topicPrimaryKeyColumns,
 		)
+
+		insert = strmangle.SetComplement(insert, topicGeneratedColumns)
+		update = strmangle.SetComplement(update, topicGeneratedColumns)
 
 		if updateOnConflict && len(update) == 0 {
 			return errors.New("models: unable to upsert topics, could not build update column list")

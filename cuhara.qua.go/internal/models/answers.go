@@ -13,6 +13,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/aarondl/null/v8"
 	"github.com/aarondl/sqlboiler/v4/boil"
 	"github.com/aarondl/sqlboiler/v4/queries"
 	"github.com/aarondl/sqlboiler/v4/queries/qm"
@@ -25,13 +26,13 @@ import (
 type Answer struct {
 	ID           int64     `boil:"id" json:"id" toml:"id" yaml:"id"`
 	Body         string    `boil:"body" json:"body" toml:"body" yaml:"body"`
-	IsAccepted   bool      `boil:"is_accepted" json:"is_accepted" toml:"is_accepted" yaml:"is_accepted"`
-	IsFirstReply bool      `boil:"is_first_reply" json:"is_first_reply" toml:"is_first_reply" yaml:"is_first_reply"`
+	IsAccepted   null.Bool `boil:"is_accepted" json:"is_accepted,omitempty" toml:"is_accepted" yaml:"is_accepted,omitempty"`
+	IsFirstReply null.Bool `boil:"is_first_reply" json:"is_first_reply,omitempty" toml:"is_first_reply" yaml:"is_first_reply,omitempty"`
 	CreatorID    int64     `boil:"creator_id" json:"creator_id" toml:"creator_id" yaml:"creator_id"`
 	PostID       int64     `boil:"post_id" json:"post_id" toml:"post_id" yaml:"post_id"`
 	TenantID     int64     `boil:"tenant_id" json:"tenant_id" toml:"tenant_id" yaml:"tenant_id"`
 	CreatedAt    time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
-	UpdatedAt    time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
+	UpdatedAt    null.Time `boil:"updated_at" json:"updated_at,omitempty" toml:"updated_at" yaml:"updated_at,omitempty"`
 
 	R *answerR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L answerL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -137,14 +138,29 @@ func (w whereHelperstring) NIN(slice []string) qm.QueryMod {
 	return qm.WhereNotIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
 }
 
-type whereHelperbool struct{ field string }
+type whereHelpernull_Bool struct{ field string }
 
-func (w whereHelperbool) EQ(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
-func (w whereHelperbool) NEQ(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
-func (w whereHelperbool) LT(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.LT, x) }
-func (w whereHelperbool) LTE(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
-func (w whereHelperbool) GT(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
-func (w whereHelperbool) GTE(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
+func (w whereHelpernull_Bool) EQ(x null.Bool) qm.QueryMod {
+	return qmhelper.WhereNullEQ(w.field, false, x)
+}
+func (w whereHelpernull_Bool) NEQ(x null.Bool) qm.QueryMod {
+	return qmhelper.WhereNullEQ(w.field, true, x)
+}
+func (w whereHelpernull_Bool) LT(x null.Bool) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.LT, x)
+}
+func (w whereHelpernull_Bool) LTE(x null.Bool) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.LTE, x)
+}
+func (w whereHelpernull_Bool) GT(x null.Bool) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.GT, x)
+}
+func (w whereHelpernull_Bool) GTE(x null.Bool) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.GTE, x)
+}
+
+func (w whereHelpernull_Bool) IsNull() qm.QueryMod    { return qmhelper.WhereIsNull(w.field) }
+func (w whereHelpernull_Bool) IsNotNull() qm.QueryMod { return qmhelper.WhereIsNotNull(w.field) }
 
 type whereHelpertime_Time struct{ field string }
 
@@ -167,26 +183,50 @@ func (w whereHelpertime_Time) GTE(x time.Time) qm.QueryMod {
 	return qmhelper.Where(w.field, qmhelper.GTE, x)
 }
 
+type whereHelpernull_Time struct{ field string }
+
+func (w whereHelpernull_Time) EQ(x null.Time) qm.QueryMod {
+	return qmhelper.WhereNullEQ(w.field, false, x)
+}
+func (w whereHelpernull_Time) NEQ(x null.Time) qm.QueryMod {
+	return qmhelper.WhereNullEQ(w.field, true, x)
+}
+func (w whereHelpernull_Time) LT(x null.Time) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.LT, x)
+}
+func (w whereHelpernull_Time) LTE(x null.Time) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.LTE, x)
+}
+func (w whereHelpernull_Time) GT(x null.Time) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.GT, x)
+}
+func (w whereHelpernull_Time) GTE(x null.Time) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.GTE, x)
+}
+
+func (w whereHelpernull_Time) IsNull() qm.QueryMod    { return qmhelper.WhereIsNull(w.field) }
+func (w whereHelpernull_Time) IsNotNull() qm.QueryMod { return qmhelper.WhereIsNotNull(w.field) }
+
 var AnswerWhere = struct {
 	ID           whereHelperint64
 	Body         whereHelperstring
-	IsAccepted   whereHelperbool
-	IsFirstReply whereHelperbool
+	IsAccepted   whereHelpernull_Bool
+	IsFirstReply whereHelpernull_Bool
 	CreatorID    whereHelperint64
 	PostID       whereHelperint64
 	TenantID     whereHelperint64
 	CreatedAt    whereHelpertime_Time
-	UpdatedAt    whereHelpertime_Time
+	UpdatedAt    whereHelpernull_Time
 }{
 	ID:           whereHelperint64{field: "\"answers\".\"id\""},
 	Body:         whereHelperstring{field: "\"answers\".\"body\""},
-	IsAccepted:   whereHelperbool{field: "\"answers\".\"is_accepted\""},
-	IsFirstReply: whereHelperbool{field: "\"answers\".\"is_first_reply\""},
+	IsAccepted:   whereHelpernull_Bool{field: "\"answers\".\"is_accepted\""},
+	IsFirstReply: whereHelpernull_Bool{field: "\"answers\".\"is_first_reply\""},
 	CreatorID:    whereHelperint64{field: "\"answers\".\"creator_id\""},
 	PostID:       whereHelperint64{field: "\"answers\".\"post_id\""},
 	TenantID:     whereHelperint64{field: "\"answers\".\"tenant_id\""},
 	CreatedAt:    whereHelpertime_Time{field: "\"answers\".\"created_at\""},
-	UpdatedAt:    whereHelpertime_Time{field: "\"answers\".\"updated_at\""},
+	UpdatedAt:    whereHelpernull_Time{field: "\"answers\".\"updated_at\""},
 }
 
 // AnswerRels is where relationship names are stored.
@@ -306,7 +346,7 @@ var (
 	answerColumnsWithoutDefault = []string{"body", "creator_id", "post_id", "tenant_id"}
 	answerColumnsWithDefault    = []string{"id", "is_accepted", "is_first_reply", "created_at", "updated_at"}
 	answerPrimaryKeyColumns     = []string{"id"}
-	answerGeneratedColumns      = []string{}
+	answerGeneratedColumns      = []string{"id"}
 )
 
 type (
@@ -1563,8 +1603,8 @@ func (o *Answer) Insert(ctx context.Context, exec boil.ContextExecutor, columns 
 		if o.CreatedAt.IsZero() {
 			o.CreatedAt = currTime
 		}
-		if o.UpdatedAt.IsZero() {
-			o.UpdatedAt = currTime
+		if queries.MustTime(o.UpdatedAt).IsZero() {
+			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
 	}
 
@@ -1586,6 +1626,7 @@ func (o *Answer) Insert(ctx context.Context, exec boil.ContextExecutor, columns 
 			answerColumnsWithoutDefault,
 			nzDefaults,
 		)
+		wl = strmangle.SetComplement(wl, answerGeneratedColumns)
 
 		cache.valueMapping, err = queries.BindMapping(answerType, answerMapping, wl)
 		if err != nil {
@@ -1645,7 +1686,7 @@ func (o *Answer) Update(ctx context.Context, exec boil.ContextExecutor, columns 
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
-		o.UpdatedAt = currTime
+		queries.SetScanner(&o.UpdatedAt, currTime)
 	}
 
 	var err error
@@ -1662,6 +1703,7 @@ func (o *Answer) Update(ctx context.Context, exec boil.ContextExecutor, columns 
 			answerAllColumns,
 			answerPrimaryKeyColumns,
 		)
+		wl = strmangle.SetComplement(wl, answerGeneratedColumns)
 
 		if !columns.IsWhitelist() {
 			wl = strmangle.SetComplement(wl, []string{"created_at"})
@@ -1784,7 +1826,7 @@ func (o *Answer) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOn
 		if o.CreatedAt.IsZero() {
 			o.CreatedAt = currTime
 		}
-		o.UpdatedAt = currTime
+		queries.SetScanner(&o.UpdatedAt, currTime)
 	}
 
 	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
@@ -1839,6 +1881,9 @@ func (o *Answer) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOn
 			answerAllColumns,
 			answerPrimaryKeyColumns,
 		)
+
+		insert = strmangle.SetComplement(insert, answerGeneratedColumns)
+		update = strmangle.SetComplement(update, answerGeneratedColumns)
 
 		if updateOnConflict && len(update) == 0 {
 			return errors.New("models: unable to upsert answers, could not build update column list")

@@ -13,6 +13,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/aarondl/null/v8"
 	"github.com/aarondl/sqlboiler/v4/boil"
 	"github.com/aarondl/sqlboiler/v4/queries"
 	"github.com/aarondl/sqlboiler/v4/queries/qm"
@@ -30,7 +31,7 @@ type User struct {
 	RoleID     int64     `boil:"role_id" json:"role_id" toml:"role_id" yaml:"role_id"`
 	TenantID   int64     `boil:"tenant_id" json:"tenant_id" toml:"tenant_id" yaml:"tenant_id"`
 	CreatedAt  time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
-	UpdatedAt  time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
+	UpdatedAt  null.Time `boil:"updated_at" json:"updated_at,omitempty" toml:"updated_at" yaml:"updated_at,omitempty"`
 	Password   string    `boil:"password" json:"password" toml:"password" yaml:"password"`
 
 	R *userR `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -91,7 +92,7 @@ var UserWhere = struct {
 	RoleID     whereHelperint64
 	TenantID   whereHelperint64
 	CreatedAt  whereHelpertime_Time
-	UpdatedAt  whereHelpertime_Time
+	UpdatedAt  whereHelpernull_Time
 	Password   whereHelperstring
 }{
 	ID:         whereHelperint64{field: "\"users\".\"id\""},
@@ -101,7 +102,7 @@ var UserWhere = struct {
 	RoleID:     whereHelperint64{field: "\"users\".\"role_id\""},
 	TenantID:   whereHelperint64{field: "\"users\".\"tenant_id\""},
 	CreatedAt:  whereHelpertime_Time{field: "\"users\".\"created_at\""},
-	UpdatedAt:  whereHelpertime_Time{field: "\"users\".\"updated_at\""},
+	UpdatedAt:  whereHelpernull_Time{field: "\"users\".\"updated_at\""},
 	Password:   whereHelperstring{field: "\"users\".\"password\""},
 }
 
@@ -260,7 +261,7 @@ var (
 	userColumnsWithoutDefault = []string{"name", "email", "vsc_account", "role_id", "tenant_id", "password"}
 	userColumnsWithDefault    = []string{"id", "created_at", "updated_at"}
 	userPrimaryKeyColumns     = []string{"id"}
-	userGeneratedColumns      = []string{}
+	userGeneratedColumns      = []string{"id"}
 )
 
 type (
@@ -1311,10 +1312,10 @@ func (userL) LoadClaims(ctx context.Context, e boil.ContextExecutor, singular bo
 
 	var resultSlice []*Claim
 
-	var localJoinCols []int
+	var localJoinCols []int64
 	for results.Next() {
 		one := new(Claim)
-		var localJoinCol int
+		var localJoinCol int64
 
 		err = results.Scan(&one.ID, &one.Name, &one.Description, &one.TenantID, &one.CreatedAt, &one.UpdatedAt, &localJoinCol)
 		if err != nil {
@@ -1989,8 +1990,8 @@ func (o *User) Insert(ctx context.Context, exec boil.ContextExecutor, columns bo
 		if o.CreatedAt.IsZero() {
 			o.CreatedAt = currTime
 		}
-		if o.UpdatedAt.IsZero() {
-			o.UpdatedAt = currTime
+		if queries.MustTime(o.UpdatedAt).IsZero() {
+			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
 	}
 
@@ -2012,6 +2013,7 @@ func (o *User) Insert(ctx context.Context, exec boil.ContextExecutor, columns bo
 			userColumnsWithoutDefault,
 			nzDefaults,
 		)
+		wl = strmangle.SetComplement(wl, userGeneratedColumns)
 
 		cache.valueMapping, err = queries.BindMapping(userType, userMapping, wl)
 		if err != nil {
@@ -2071,7 +2073,7 @@ func (o *User) Update(ctx context.Context, exec boil.ContextExecutor, columns bo
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
-		o.UpdatedAt = currTime
+		queries.SetScanner(&o.UpdatedAt, currTime)
 	}
 
 	var err error
@@ -2088,6 +2090,7 @@ func (o *User) Update(ctx context.Context, exec boil.ContextExecutor, columns bo
 			userAllColumns,
 			userPrimaryKeyColumns,
 		)
+		wl = strmangle.SetComplement(wl, userGeneratedColumns)
 
 		if !columns.IsWhitelist() {
 			wl = strmangle.SetComplement(wl, []string{"created_at"})
@@ -2210,7 +2213,7 @@ func (o *User) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnCo
 		if o.CreatedAt.IsZero() {
 			o.CreatedAt = currTime
 		}
-		o.UpdatedAt = currTime
+		queries.SetScanner(&o.UpdatedAt, currTime)
 	}
 
 	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
@@ -2265,6 +2268,9 @@ func (o *User) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnCo
 			userAllColumns,
 			userPrimaryKeyColumns,
 		)
+
+		insert = strmangle.SetComplement(insert, userGeneratedColumns)
+		update = strmangle.SetComplement(update, userGeneratedColumns)
 
 		if updateOnConflict && len(update) == 0 {
 			return errors.New("models: unable to upsert users, could not build update column list")

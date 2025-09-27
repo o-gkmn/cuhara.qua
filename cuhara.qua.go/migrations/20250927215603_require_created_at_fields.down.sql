@@ -1,0 +1,12 @@
+-- +migrate Down
+
+ALTER TABLE users ALTER COLUMN created_at SET NULL;
+ALTER TABLE roles ALTER COLUMN created_at SET NULL;
+ALTER TABLE tenants ALTER COLUMN created_at SET NULL;
+ALTER TABLE topics ALTER COLUMN created_at SET NULL;
+ALTER TABLE sub_topics ALTER COLUMN created_at SET NULL;
+ALTER TABLE posts ALTER COLUMN created_at SET NULL;
+ALTER TABLE answers ALTER COLUMN created_at SET NULL;
+ALTER TABLE votes ALTER COLUMN created_at SET NULL;
+ALTER TABLE comments ALTER COLUMN created_at SET NULL;
+ALTER TABLE tags ALTER COLUMN created_at SET NULL;

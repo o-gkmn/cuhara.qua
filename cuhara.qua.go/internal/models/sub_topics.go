@@ -13,6 +13,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/aarondl/null/v8"
 	"github.com/aarondl/sqlboiler/v4/boil"
 	"github.com/aarondl/sqlboiler/v4/queries"
 	"github.com/aarondl/sqlboiler/v4/queries/qm"
@@ -28,7 +29,7 @@ type SubTopic struct {
 	TopicID   int64     `boil:"topic_id" json:"topic_id" toml:"topic_id" yaml:"topic_id"`
 	TenantID  int64     `boil:"tenant_id" json:"tenant_id" toml:"tenant_id" yaml:"tenant_id"`
 	CreatedAt time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
-	UpdatedAt time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
+	UpdatedAt null.Time `boil:"updated_at" json:"updated_at,omitempty" toml:"updated_at" yaml:"updated_at,omitempty"`
 
 	R *subTopicR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L subTopicL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -74,14 +75,14 @@ var SubTopicWhere = struct {
 	TopicID   whereHelperint64
 	TenantID  whereHelperint64
 	CreatedAt whereHelpertime_Time
-	UpdatedAt whereHelpertime_Time
+	UpdatedAt whereHelpernull_Time
 }{
 	ID:        whereHelperint64{field: "\"sub_topics\".\"id\""},
 	Name:      whereHelperstring{field: "\"sub_topics\".\"name\""},
 	TopicID:   whereHelperint64{field: "\"sub_topics\".\"topic_id\""},
 	TenantID:  whereHelperint64{field: "\"sub_topics\".\"tenant_id\""},
 	CreatedAt: whereHelpertime_Time{field: "\"sub_topics\".\"created_at\""},
-	UpdatedAt: whereHelpertime_Time{field: "\"sub_topics\".\"updated_at\""},
+	UpdatedAt: whereHelpernull_Time{field: "\"sub_topics\".\"updated_at\""},
 }
 
 // SubTopicRels is where relationship names are stored.
@@ -163,7 +164,7 @@ var (
 	subTopicColumnsWithoutDefault = []string{"name", "topic_id", "tenant_id"}
 	subTopicColumnsWithDefault    = []string{"id", "created_at", "updated_at"}
 	subTopicPrimaryKeyColumns     = []string{"id"}
-	subTopicGeneratedColumns      = []string{}
+	subTopicGeneratedColumns      = []string{"id"}
 )
 
 type (
@@ -1062,8 +1063,8 @@ func (o *SubTopic) Insert(ctx context.Context, exec boil.ContextExecutor, column
 		if o.CreatedAt.IsZero() {
 			o.CreatedAt = currTime
 		}
-		if o.UpdatedAt.IsZero() {
-			o.UpdatedAt = currTime
+		if queries.MustTime(o.UpdatedAt).IsZero() {
+			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
 	}
 
@@ -1085,6 +1086,7 @@ func (o *SubTopic) Insert(ctx context.Context, exec boil.ContextExecutor, column
 			subTopicColumnsWithoutDefault,
 			nzDefaults,
 		)
+		wl = strmangle.SetComplement(wl, subTopicGeneratedColumns)
 
 		cache.valueMapping, err = queries.BindMapping(subTopicType, subTopicMapping, wl)
 		if err != nil {
@@ -1144,7 +1146,7 @@ func (o *SubTopic) Update(ctx context.Context, exec boil.ContextExecutor, column
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
-		o.UpdatedAt = currTime
+		queries.SetScanner(&o.UpdatedAt, currTime)
 	}
 
 	var err error
@@ -1161,6 +1163,7 @@ func (o *SubTopic) Update(ctx context.Context, exec boil.ContextExecutor, column
 			subTopicAllColumns,
 			subTopicPrimaryKeyColumns,
 		)
+		wl = strmangle.SetComplement(wl, subTopicGeneratedColumns)
 
 		if !columns.IsWhitelist() {
 			wl = strmangle.SetComplement(wl, []string{"created_at"})
@@ -1283,7 +1286,7 @@ func (o *SubTopic) Upsert(ctx context.Context, exec boil.ContextExecutor, update
 		if o.CreatedAt.IsZero() {
 			o.CreatedAt = currTime
 		}
-		o.UpdatedAt = currTime
+		queries.SetScanner(&o.UpdatedAt, currTime)
 	}
 
 	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
@@ -1338,6 +1341,9 @@ func (o *SubTopic) Upsert(ctx context.Context, exec boil.ContextExecutor, update
 			subTopicAllColumns,
 			subTopicPrimaryKeyColumns,
 		)
+
+		insert = strmangle.SetComplement(insert, subTopicGeneratedColumns)
+		update = strmangle.SetComplement(update, subTopicGeneratedColumns)
 
 		if updateOnConflict && len(update) == 0 {
 			return errors.New("models: unable to upsert sub_topics, could not build update column list")
