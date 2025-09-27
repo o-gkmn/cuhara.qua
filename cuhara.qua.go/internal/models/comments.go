@@ -23,11 +23,11 @@ import (
 
 // Comment is an object representing the database table.
 type Comment struct {
-	ID        int       `boil:"id" json:"id" toml:"id" yaml:"id"`
+	ID        int64     `boil:"id" json:"id" toml:"id" yaml:"id"`
 	Body      string    `boil:"body" json:"body" toml:"body" yaml:"body"`
-	SenderID  int       `boil:"sender_id" json:"sender_id" toml:"sender_id" yaml:"sender_id"`
-	AnswerID  int       `boil:"answer_id" json:"answer_id" toml:"answer_id" yaml:"answer_id"`
-	TenantID  int       `boil:"tenant_id" json:"tenant_id" toml:"tenant_id" yaml:"tenant_id"`
+	SenderID  int64     `boil:"sender_id" json:"sender_id" toml:"sender_id" yaml:"sender_id"`
+	AnswerID  int64     `boil:"answer_id" json:"answer_id" toml:"answer_id" yaml:"answer_id"`
+	TenantID  int64     `boil:"tenant_id" json:"tenant_id" toml:"tenant_id" yaml:"tenant_id"`
 	CreatedAt time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
 	UpdatedAt time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
 
@@ -74,19 +74,19 @@ var CommentTableColumns = struct {
 // Generated where
 
 var CommentWhere = struct {
-	ID        whereHelperint
+	ID        whereHelperint64
 	Body      whereHelperstring
-	SenderID  whereHelperint
-	AnswerID  whereHelperint
-	TenantID  whereHelperint
+	SenderID  whereHelperint64
+	AnswerID  whereHelperint64
+	TenantID  whereHelperint64
 	CreatedAt whereHelpertime_Time
 	UpdatedAt whereHelpertime_Time
 }{
-	ID:        whereHelperint{field: "\"comments\".\"id\""},
+	ID:        whereHelperint64{field: "\"comments\".\"id\""},
 	Body:      whereHelperstring{field: "\"comments\".\"body\""},
-	SenderID:  whereHelperint{field: "\"comments\".\"sender_id\""},
-	AnswerID:  whereHelperint{field: "\"comments\".\"answer_id\""},
-	TenantID:  whereHelperint{field: "\"comments\".\"tenant_id\""},
+	SenderID:  whereHelperint64{field: "\"comments\".\"sender_id\""},
+	AnswerID:  whereHelperint64{field: "\"comments\".\"answer_id\""},
+	TenantID:  whereHelperint64{field: "\"comments\".\"tenant_id\""},
 	CreatedAt: whereHelpertime_Time{field: "\"comments\".\"created_at\""},
 	UpdatedAt: whereHelpertime_Time{field: "\"comments\".\"updated_at\""},
 }
@@ -1025,7 +1025,7 @@ func Comments(mods ...qm.QueryMod) commentQuery {
 
 // FindComment retrieves a single record by ID with an executor.
 // If selectCols is empty Find will return all columns.
-func FindComment(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*Comment, error) {
+func FindComment(ctx context.Context, exec boil.ContextExecutor, iD int64, selectCols ...string) (*Comment, error) {
 	commentObj := &Comment{}
 
 	sel := "*"
@@ -1554,7 +1554,7 @@ func (o *CommentSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor)
 }
 
 // CommentExists checks if the Comment row exists.
-func CommentExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+func CommentExists(ctx context.Context, exec boil.ContextExecutor, iD int64) (bool, error) {
 	var exists bool
 	sql := "select exists(select 1 from \"comments\" where \"id\"=$1 limit 1)"
 

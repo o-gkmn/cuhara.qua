@@ -97,8 +97,8 @@ func (s *Service) Register(ctx context.Context, request dto.RegisterRequest) (dt
 			Email:      request.Email,
 			Name:       request.Name,
 			VSCAccount: request.VscAccount,
-			RoleID:     int(request.RoleID),
-			TenantID:   int(request.TenantID),
+			RoleID:     request.RoleID,
+			TenantID:   request.TenantID,
 			Password:   hash,
 		}
 

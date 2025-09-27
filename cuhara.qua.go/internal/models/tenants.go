@@ -23,7 +23,7 @@ import (
 
 // Tenant is an object representing the database table.
 type Tenant struct {
-	ID        int       `boil:"id" json:"id" toml:"id" yaml:"id"`
+	ID        int64     `boil:"id" json:"id" toml:"id" yaml:"id"`
 	Name      string    `boil:"name" json:"name" toml:"name" yaml:"name"`
 	CreatedAt time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
 	UpdatedAt time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
@@ -59,12 +59,12 @@ var TenantTableColumns = struct {
 // Generated where
 
 var TenantWhere = struct {
-	ID        whereHelperint
+	ID        whereHelperint64
 	Name      whereHelperstring
 	CreatedAt whereHelpertime_Time
 	UpdatedAt whereHelpertime_Time
 }{
-	ID:        whereHelperint{field: "\"tenants\".\"id\""},
+	ID:        whereHelperint64{field: "\"tenants\".\"id\""},
 	Name:      whereHelperstring{field: "\"tenants\".\"name\""},
 	CreatedAt: whereHelpertime_Time{field: "\"tenants\".\"created_at\""},
 	UpdatedAt: whereHelpertime_Time{field: "\"tenants\".\"updated_at\""},
@@ -2403,7 +2403,7 @@ func Tenants(mods ...qm.QueryMod) tenantQuery {
 
 // FindTenant retrieves a single record by ID with an executor.
 // If selectCols is empty Find will return all columns.
-func FindTenant(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*Tenant, error) {
+func FindTenant(ctx context.Context, exec boil.ContextExecutor, iD int64, selectCols ...string) (*Tenant, error) {
 	tenantObj := &Tenant{}
 
 	sel := "*"
@@ -2932,7 +2932,7 @@ func (o *TenantSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) 
 }
 
 // TenantExists checks if the Tenant row exists.
-func TenantExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+func TenantExists(ctx context.Context, exec boil.ContextExecutor, iD int64) (bool, error) {
 	var exists bool
 	sql := "select exists(select 1 from \"tenants\" where \"id\"=$1 limit 1)"
 

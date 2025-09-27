@@ -23,10 +23,10 @@ import (
 
 // SubTopic is an object representing the database table.
 type SubTopic struct {
-	ID        int       `boil:"id" json:"id" toml:"id" yaml:"id"`
+	ID        int64     `boil:"id" json:"id" toml:"id" yaml:"id"`
 	Name      string    `boil:"name" json:"name" toml:"name" yaml:"name"`
-	TopicID   int       `boil:"topic_id" json:"topic_id" toml:"topic_id" yaml:"topic_id"`
-	TenantID  int       `boil:"tenant_id" json:"tenant_id" toml:"tenant_id" yaml:"tenant_id"`
+	TopicID   int64     `boil:"topic_id" json:"topic_id" toml:"topic_id" yaml:"topic_id"`
+	TenantID  int64     `boil:"tenant_id" json:"tenant_id" toml:"tenant_id" yaml:"tenant_id"`
 	CreatedAt time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
 	UpdatedAt time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
 
@@ -69,17 +69,17 @@ var SubTopicTableColumns = struct {
 // Generated where
 
 var SubTopicWhere = struct {
-	ID        whereHelperint
+	ID        whereHelperint64
 	Name      whereHelperstring
-	TopicID   whereHelperint
-	TenantID  whereHelperint
+	TopicID   whereHelperint64
+	TenantID  whereHelperint64
 	CreatedAt whereHelpertime_Time
 	UpdatedAt whereHelpertime_Time
 }{
-	ID:        whereHelperint{field: "\"sub_topics\".\"id\""},
+	ID:        whereHelperint64{field: "\"sub_topics\".\"id\""},
 	Name:      whereHelperstring{field: "\"sub_topics\".\"name\""},
-	TopicID:   whereHelperint{field: "\"sub_topics\".\"topic_id\""},
-	TenantID:  whereHelperint{field: "\"sub_topics\".\"tenant_id\""},
+	TopicID:   whereHelperint64{field: "\"sub_topics\".\"topic_id\""},
+	TenantID:  whereHelperint64{field: "\"sub_topics\".\"tenant_id\""},
 	CreatedAt: whereHelpertime_Time{field: "\"sub_topics\".\"created_at\""},
 	UpdatedAt: whereHelpertime_Time{field: "\"sub_topics\".\"updated_at\""},
 }
@@ -1020,7 +1020,7 @@ func SubTopics(mods ...qm.QueryMod) subTopicQuery {
 
 // FindSubTopic retrieves a single record by ID with an executor.
 // If selectCols is empty Find will return all columns.
-func FindSubTopic(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*SubTopic, error) {
+func FindSubTopic(ctx context.Context, exec boil.ContextExecutor, iD int64, selectCols ...string) (*SubTopic, error) {
 	subTopicObj := &SubTopic{}
 
 	sel := "*"
@@ -1549,7 +1549,7 @@ func (o *SubTopicSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor
 }
 
 // SubTopicExists checks if the SubTopic row exists.
-func SubTopicExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+func SubTopicExists(ctx context.Context, exec boil.ContextExecutor, iD int64) (bool, error) {
 	var exists bool
 	sql := "select exists(select 1 from \"sub_topics\" where \"id\"=$1 limit 1)"
 

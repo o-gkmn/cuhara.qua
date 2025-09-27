@@ -23,9 +23,9 @@ import (
 
 // Topic is an object representing the database table.
 type Topic struct {
-	ID        int       `boil:"id" json:"id" toml:"id" yaml:"id"`
+	ID        int64     `boil:"id" json:"id" toml:"id" yaml:"id"`
 	Name      string    `boil:"name" json:"name" toml:"name" yaml:"name"`
-	TenantID  int       `boil:"tenant_id" json:"tenant_id" toml:"tenant_id" yaml:"tenant_id"`
+	TenantID  int64     `boil:"tenant_id" json:"tenant_id" toml:"tenant_id" yaml:"tenant_id"`
 	CreatedAt time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
 	UpdatedAt time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
 
@@ -64,15 +64,15 @@ var TopicTableColumns = struct {
 // Generated where
 
 var TopicWhere = struct {
-	ID        whereHelperint
+	ID        whereHelperint64
 	Name      whereHelperstring
-	TenantID  whereHelperint
+	TenantID  whereHelperint64
 	CreatedAt whereHelpertime_Time
 	UpdatedAt whereHelpertime_Time
 }{
-	ID:        whereHelperint{field: "\"topics\".\"id\""},
+	ID:        whereHelperint64{field: "\"topics\".\"id\""},
 	Name:      whereHelperstring{field: "\"topics\".\"name\""},
-	TenantID:  whereHelperint{field: "\"topics\".\"tenant_id\""},
+	TenantID:  whereHelperint64{field: "\"topics\".\"tenant_id\""},
 	CreatedAt: whereHelpertime_Time{field: "\"topics\".\"created_at\""},
 	UpdatedAt: whereHelpertime_Time{field: "\"topics\".\"updated_at\""},
 }
@@ -816,7 +816,7 @@ func Topics(mods ...qm.QueryMod) topicQuery {
 
 // FindTopic retrieves a single record by ID with an executor.
 // If selectCols is empty Find will return all columns.
-func FindTopic(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*Topic, error) {
+func FindTopic(ctx context.Context, exec boil.ContextExecutor, iD int64, selectCols ...string) (*Topic, error) {
 	topicObj := &Topic{}
 
 	sel := "*"
@@ -1345,7 +1345,7 @@ func (o *TopicSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) e
 }
 
 // TopicExists checks if the Topic row exists.
-func TopicExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+func TopicExists(ctx context.Context, exec boil.ContextExecutor, iD int64) (bool, error) {
 	var exists bool
 	sql := "select exists(select 1 from \"topics\" where \"id\"=$1 limit 1)"
 

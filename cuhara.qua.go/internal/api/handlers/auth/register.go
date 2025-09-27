@@ -7,7 +7,6 @@ import (
 	"cuhara.qua.go/internal/data/dto"
 	"cuhara.qua.go/internal/types"
 	"cuhara.qua.go/internal/util"
-	"github.com/go-openapi/swag"
 	"github.com/labstack/echo/v4"
 )
 
@@ -25,11 +24,11 @@ func registerHandler(s *api.Server) echo.HandlerFunc {
 		}
 
 		res, err := s.Auth.Register(ctx, dto.RegisterRequest{
-			Email:      swag.StringValue(body.Email),
-			Password:   swag.StringValue(body.Password),
-			VscAccount: swag.StringValue(body.VscAccount),
-			RoleID:     swag.Int64Value(body.RoleID),
-			TenantID:   swag.Int64Value(body.TenantID),
+			Email:      util.PtrToString(body.Email),
+			Password:   util.PtrToString(body.Password),
+			VscAccount: util.PtrToString(body.VscAccount),
+			RoleID:     util.PtrToInt64(body.RoleID),
+			TenantID:   util.PtrToInt64(body.TenantID),
 		})
 		if err != nil {
 			return err

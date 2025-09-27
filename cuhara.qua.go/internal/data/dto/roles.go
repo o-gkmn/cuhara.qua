@@ -1,13 +1,14 @@
 package dto
 
 type RoleDTO struct {
-	ID   int64
-	Name string
+	ID     int64
+	Name   string
+	Tenant *TenantDTO
 }
 
 type CreateRoleRequest struct {
-	Name      string
-	TennantID int64
+	Name     string
+	TenantID int64
 }
 
 type CreateRoleResponse struct {
@@ -15,8 +16,8 @@ type CreateRoleResponse struct {
 }
 
 type UpdateRoleRequest struct {
-	ID int64
-	Name string
+	ID   int64
+	Name *string
 }
 
 type UpdateRoleResponse struct {

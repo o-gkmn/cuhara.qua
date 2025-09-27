@@ -69,7 +69,6 @@ func ValidateAndReturn(c echo.Context, code int, v runtime.Validatable) error {
 
 func validatePayload(c echo.Context, v runtime.Validatable) error {
 	if err := v.Validate(strfmt.Default); err != nil {
-
 		var compositeError *oerrors.CompositeError
 		if errors.As(err, &compositeError) {
 			LogFromEchoContext(c).Debug().Errs("validation_errors", compositeError.Errors).Msg("Payload did match scheme, returning HTTP validation error")

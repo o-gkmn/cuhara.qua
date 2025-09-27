@@ -1,4 +1,4 @@
-package auth
+package tenants
 
 import (
 	"net/http"
@@ -6,29 +6,28 @@ import (
 	"cuhara.qua.go/internal/api"
 	"cuhara.qua.go/internal/data/dto"
 	"cuhara.qua.go/internal/types"
-
 	"cuhara.qua.go/internal/util"
 	"github.com/go-openapi/swag"
 	"github.com/labstack/echo/v4"
 )
 
-func LoginRouter(s *api.Server) *echo.Route {
-	return s.Router.APIV1Auth.POST("/login", loginHandler(s))
+func CreateTenantRouter(s *api.Server) *echo.Route {
+	return s.Router.APIV1Tennants.POST("", createTenantHandler(s))
 }
 
-func loginHandler(s *api.Server) echo.HandlerFunc {
+func createTenantHandler(s *api.Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
 
-		var body types.LoginRequest
+		var body types.CreateTenantRequest
 		if err := util.BindAndValidateBody(c, &body); err != nil {
 			return err
 		}
 
-		res, err := s.Auth.Login(ctx, dto.LoginRequest{
-			Email:    swag.StringValue(body.Email),
-			Password: swag.StringValue(body.Password),
+		res, err := s.Tennant.Create(ctx, dto.CreateTenantRequest{
+			Name: swag.StringValue(body.Name),
 		})
+
 		if err != nil {
 			return err
 		}

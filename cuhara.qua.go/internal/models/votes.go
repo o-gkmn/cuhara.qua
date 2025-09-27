@@ -23,11 +23,11 @@ import (
 
 // Vote is an object representing the database table.
 type Vote struct {
-	ID          int       `boil:"id" json:"id" toml:"id" yaml:"id"`
-	VoterID     int       `boil:"voter_id" json:"voter_id" toml:"voter_id" yaml:"voter_id"`
-	AnswerID    int       `boil:"answer_id" json:"answer_id" toml:"answer_id" yaml:"answer_id"`
+	ID          int64     `boil:"id" json:"id" toml:"id" yaml:"id"`
+	VoterID     int64     `boil:"voter_id" json:"voter_id" toml:"voter_id" yaml:"voter_id"`
+	AnswerID    int64     `boil:"answer_id" json:"answer_id" toml:"answer_id" yaml:"answer_id"`
 	IsOwnerVote bool      `boil:"is_owner_vote" json:"is_owner_vote" toml:"is_owner_vote" yaml:"is_owner_vote"`
-	TenantID    int       `boil:"tenant_id" json:"tenant_id" toml:"tenant_id" yaml:"tenant_id"`
+	TenantID    int64     `boil:"tenant_id" json:"tenant_id" toml:"tenant_id" yaml:"tenant_id"`
 	CreatedAt   time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
 	UpdatedAt   time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
 
@@ -74,19 +74,19 @@ var VoteTableColumns = struct {
 // Generated where
 
 var VoteWhere = struct {
-	ID          whereHelperint
-	VoterID     whereHelperint
-	AnswerID    whereHelperint
+	ID          whereHelperint64
+	VoterID     whereHelperint64
+	AnswerID    whereHelperint64
 	IsOwnerVote whereHelperbool
-	TenantID    whereHelperint
+	TenantID    whereHelperint64
 	CreatedAt   whereHelpertime_Time
 	UpdatedAt   whereHelpertime_Time
 }{
-	ID:          whereHelperint{field: "\"votes\".\"id\""},
-	VoterID:     whereHelperint{field: "\"votes\".\"voter_id\""},
-	AnswerID:    whereHelperint{field: "\"votes\".\"answer_id\""},
+	ID:          whereHelperint64{field: "\"votes\".\"id\""},
+	VoterID:     whereHelperint64{field: "\"votes\".\"voter_id\""},
+	AnswerID:    whereHelperint64{field: "\"votes\".\"answer_id\""},
 	IsOwnerVote: whereHelperbool{field: "\"votes\".\"is_owner_vote\""},
-	TenantID:    whereHelperint{field: "\"votes\".\"tenant_id\""},
+	TenantID:    whereHelperint64{field: "\"votes\".\"tenant_id\""},
 	CreatedAt:   whereHelpertime_Time{field: "\"votes\".\"created_at\""},
 	UpdatedAt:   whereHelpertime_Time{field: "\"votes\".\"updated_at\""},
 }
@@ -1025,7 +1025,7 @@ func Votes(mods ...qm.QueryMod) voteQuery {
 
 // FindVote retrieves a single record by ID with an executor.
 // If selectCols is empty Find will return all columns.
-func FindVote(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*Vote, error) {
+func FindVote(ctx context.Context, exec boil.ContextExecutor, iD int64, selectCols ...string) (*Vote, error) {
 	voteObj := &Vote{}
 
 	sel := "*"
@@ -1554,7 +1554,7 @@ func (o *VoteSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) er
 }
 
 // VoteExists checks if the Vote row exists.
-func VoteExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+func VoteExists(ctx context.Context, exec boil.ContextExecutor, iD int64) (bool, error) {
 	var exists bool
 	sql := "select exists(select 1 from \"votes\" where \"id\"=$1 limit 1)"
 

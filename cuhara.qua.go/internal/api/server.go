@@ -11,7 +11,7 @@ import (
 	"cuhara.qua.go/internal/data/dto"
 	"cuhara.qua.go/internal/modules/auth"
 	"cuhara.qua.go/internal/modules/role"
-	"cuhara.qua.go/internal/modules/tennant"
+	tenant "cuhara.qua.go/internal/modules/tennant"
 	"cuhara.qua.go/internal/modules/user"
 	"github.com/labstack/echo/v4"
 	_ "github.com/lib/pq"
@@ -57,10 +57,10 @@ type RoleService interface {
 }
 
 type TennantService interface {
-	Create(context.Context, dto.CreateTennantRequest) (dto.CreateTennantResponse, error)
-	Update(context.Context, dto.UpdateTennantRequest) (dto.UpdateTennantResponse, error)
-	Delete(context.Context, dto.DeleteTennantRequest) (dto.DeleteTennantResponse, error)
-	GetTennants(context.Context) ([]dto.TennantDTO, error)
+	Create(context.Context, dto.CreateTenantRequest) (dto.CreateTenantResponse, error)
+	Update(context.Context, dto.UpdateTenantRequest) (dto.UpdateTenantResponse, error)
+	Delete(context.Context, dto.DeleteTenantRequest) (dto.DeleteTenantResponse, error)
+	GetAll(context.Context) ([]dto.TenantDTO, error)
 }
 
 func NewServer(config config.Server) *Server {
@@ -135,7 +135,7 @@ func (s *Server) InitRoleService() error {
 }
 
 func (s *Server) InitTennantService() error {
-	s.Tennant = tennant.NewService(s.Config, s.DB)
+	s.Tennant = tenant.NewService(s.Config, s.DB)
 
 	return nil
 }

@@ -23,9 +23,9 @@ import (
 
 // Tag is an object representing the database table.
 type Tag struct {
-	ID        int       `boil:"id" json:"id" toml:"id" yaml:"id"`
+	ID        int64     `boil:"id" json:"id" toml:"id" yaml:"id"`
 	Name      string    `boil:"name" json:"name" toml:"name" yaml:"name"`
-	TenantID  int       `boil:"tenant_id" json:"tenant_id" toml:"tenant_id" yaml:"tenant_id"`
+	TenantID  int64     `boil:"tenant_id" json:"tenant_id" toml:"tenant_id" yaml:"tenant_id"`
 	CreatedAt time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
 	UpdatedAt time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
 
@@ -64,15 +64,15 @@ var TagTableColumns = struct {
 // Generated where
 
 var TagWhere = struct {
-	ID        whereHelperint
+	ID        whereHelperint64
 	Name      whereHelperstring
-	TenantID  whereHelperint
+	TenantID  whereHelperint64
 	CreatedAt whereHelpertime_Time
 	UpdatedAt whereHelpertime_Time
 }{
-	ID:        whereHelperint{field: "\"tags\".\"id\""},
+	ID:        whereHelperint64{field: "\"tags\".\"id\""},
 	Name:      whereHelperstring{field: "\"tags\".\"name\""},
-	TenantID:  whereHelperint{field: "\"tags\".\"tenant_id\""},
+	TenantID:  whereHelperint64{field: "\"tags\".\"tenant_id\""},
 	CreatedAt: whereHelpertime_Time{field: "\"tags\".\"created_at\""},
 	UpdatedAt: whereHelpertime_Time{field: "\"tags\".\"updated_at\""},
 }
@@ -926,7 +926,7 @@ func Tags(mods ...qm.QueryMod) tagQuery {
 
 // FindTag retrieves a single record by ID with an executor.
 // If selectCols is empty Find will return all columns.
-func FindTag(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*Tag, error) {
+func FindTag(ctx context.Context, exec boil.ContextExecutor, iD int64, selectCols ...string) (*Tag, error) {
 	tagObj := &Tag{}
 
 	sel := "*"
@@ -1455,7 +1455,7 @@ func (o *TagSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) err
 }
 
 // TagExists checks if the Tag row exists.
-func TagExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+func TagExists(ctx context.Context, exec boil.ContextExecutor, iD int64) (bool, error) {
 	var exists bool
 	sql := "select exists(select 1 from \"tags\" where \"id\"=$1 limit 1)"
 

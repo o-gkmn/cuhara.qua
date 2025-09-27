@@ -34,7 +34,7 @@ func (s *Service) GetUsers(ctx context.Context) ([]dto.UserDTO, error) {
 	userDTOs := make([]dto.UserDTO, len(users))
 	for i, user := range users {
 		userDTOs[i] = dto.UserDTO{
-			ID:         int64(user.ID),
+			ID:         user.ID,
 			Name:       user.Name,
 			Email:      user.Email,
 			VscAccount: user.VSCAccount,
@@ -48,7 +48,7 @@ func (s *Service) Update(ctx context.Context, request dto.UpdateUserRequest) (dt
 	log := util.LogFromContext(ctx).With().Str("id", strconv.Itoa(int(request.ID))).Logger()
 
 	user, err := models.Users(
-		models.UserWhere.ID.EQ(int(request.ID)),
+		models.UserWhere.ID.EQ(request.ID),
 	).One(ctx, s.db)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -75,8 +75,8 @@ func (s *Service) Update(ctx context.Context, request dto.UpdateUserRequest) (dt
 	}
 
 	if request.RoleID != nil {
-		log.Debug().Int("role_id", int(*request.RoleID)).Msg("Updating role id")
-		user.RoleID = int(*request.RoleID)
+		log.Debug().Int64("role_id", *request.RoleID).Msg("Updating role id")
+		user.RoleID = *request.RoleID
 	}
 
 	_, err = user.Update(ctx, s.db, boil.Whitelist(
@@ -90,9 +90,29 @@ func (s *Service) Update(ctx context.Context, request dto.UpdateUserRequest) (dt
 		return dto.UpdateUserResponse{}, err
 	}
 
-	return dto.UpdateUserResponse{ID: int64(user.ID)}, nil
+	return dto.UpdateUserResponse{ID: user.ID}, nil
 }
 
 func (s *Service) Delete(ctx context.Context, request dto.DeleteUserRequest) (dto.DeleteUserResponse, error) {
-	panic("not implemented")
+	log := util.LogFromContext(ctx).With().Int64("id", request.ID).Logger()
+	
+	user, err := models.Users(
+		models.UserWhere.ID.EQ(request.ID),
+	).One(ctx, s.db)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			log.Debug().Err(err).Msg("User not found")
+		}
+
+		log.Err(err).Msg("Failed to load user")
+		return dto.DeleteUserResponse{}, err
+	}
+
+	_, err = user.Delete(ctx, s.db)
+	if err != nil {
+		log.Err(err).Msg("Failed to delete user")
+		return dto.DeleteUserResponse{}, err
+	}
+
+	return dto.DeleteUserResponse(request), nil
 }

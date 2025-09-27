@@ -1,31 +1,31 @@
 package dto
 
-type TennantDTO struct {
+type TenantDTO struct {
 	ID   int64
 	Name string
 }
 
-type CreateTennantRequest struct {
+type CreateTenantRequest struct {
 	Name string
 }
 
-type CreateTennantResponse struct {
+type CreateTenantResponse struct {
 	ID int64
 }
 
-type UpdateTennantRequest struct {
-	ID int64
-	Name string
+type UpdateTenantRequest struct {
+	ID   int64
+	Name *string
 }
 
-type UpdateTennantResponse struct {
-	ID int64
-}
-
-type DeleteTennantRequest struct {
+type UpdateTenantResponse struct {
 	ID int64
 }
 
-type DeleteTennantResponse struct {
+type DeleteTenantRequest struct {
+	ID int64
+}
+
+type DeleteTenantResponse struct {
 	ID int64
 }

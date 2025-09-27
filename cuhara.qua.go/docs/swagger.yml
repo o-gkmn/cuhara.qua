@@ -73,7 +73,166 @@ paths:
           schema:
             $ref: "#/definitions/updateUserResponse"
 
+  /api/v1/users/{id}:
+    delete:
+      tags:
+        - users
+      summary: Delete user
+      description: Delete a user
+      parameters:
+        - $ref: "#/parameters/IDPathParam"
+      responses:
+        200:
+          description: User deleted successfully
+          schema:
+            $ref: "#/definitions/deleteUserResponse"
+
+  /api/v1/tenants:
+    get:
+      tags:
+        - tenant
+      summary: Get tenants
+      description: Get all tenants
+      responses:
+        200:
+          description: tenants fetched successfully
+          schema:
+            $ref: "#/definitions/tenantResponse"
+
+    post:
+      tags:
+        - tenant
+      summary: Create tenant
+      description: Create a new tenant
+      parameters:
+        - name: createTenant
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/createTenantRequest"
+      responses:
+        200:
+          description: Tenant created successfully
+          schema:
+            $ref: "#/definitions/createTenantResponse"
+
+  /api/v1/tenants/{id}:
+    patch:
+      tags:
+        - tenant
+      summary: Update tenant
+      description: Update a tenant
+      parameters:
+        - $ref: "#/parameters/IDPathParam"
+        - name: updateTenant
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/updateTenantRequest"
+      responses:
+        200:
+          description: Tenant updated successfully
+          schema:
+            $ref: "#/definitions/updateTenantResponse"
+
+    delete:
+      tags:
+        - tenant
+      summary: Delete tenant
+      description: Delete a tenant
+      parameters:
+        - $ref: "#/parameters/IDPathParam"
+      responses:
+        200:
+          description: Tenant deleted successfully
+          schema:
+            $ref: "#/definitions/deleteTenantResponse"
+
+  /api/v1/roles:
+    get:
+      tags:
+        - role
+      summary: Get roles
+      description: Get all roles
+      responses:
+        200:
+          description: Roles fetched successfully
+          schema:
+            $ref: "#/definitions/roleResponse"
+
+parameters:
+  IDPathParam:
+    name: id
+    in: path
+    description: User ID
+    required: true
+    type: integer
+
 definitions:
+  roleResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      tenant:
+        $ref: "#/definitions/tenantResponse"
+
+  deleteTenantResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+        x-go-type: int
+
+  updateTenantRequest:
+    type: object
+    properties:
+      name:
+        type: string
+
+  updateTenantResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+        x-go-type: int
+
+  createTenantRequest:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
+
+  createTenantResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+        x-go-type: int
+
+  tenantResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+        x-go-type: int
+      name:
+        type: string
+
+  deleteUserRequest:
+    type: integer
+    x-go-type: int
+  deleteUserResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+        x-go-type: int
+
   updateUserRequest:
     type: object
     required:
@@ -81,6 +240,7 @@ definitions:
     properties:
       id:
         type: integer
+        x-go-type: int
       name:
         type: string
       email:
@@ -94,18 +254,21 @@ definitions:
         properties:
           id:
             type: integer
+            x-go-type: int
 
   updateUserResponse:
     type: object
     properties:
       id:
         type: integer
+        x-go-type: int
 
   userResponse:
     type: object
     properties:
       id:
         type: integer
+        x-go-type: int
       name:
         type: string
       email:
@@ -150,14 +313,17 @@ definitions:
         type: string
       roleID:
         type: integer
+        x-go-type: int
       tenantID:
         type: integer
+        x-go-type: int
 
   registerResponse:
     type: object
     properties:
       id:
         type: integer
+        x-go-type: int
 
   httpValidationErrorDetail:
     type: object

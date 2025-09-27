@@ -23,13 +23,13 @@ import (
 
 // Answer is an object representing the database table.
 type Answer struct {
-	ID           int       `boil:"id" json:"id" toml:"id" yaml:"id"`
+	ID           int64     `boil:"id" json:"id" toml:"id" yaml:"id"`
 	Body         string    `boil:"body" json:"body" toml:"body" yaml:"body"`
 	IsAccepted   bool      `boil:"is_accepted" json:"is_accepted" toml:"is_accepted" yaml:"is_accepted"`
 	IsFirstReply bool      `boil:"is_first_reply" json:"is_first_reply" toml:"is_first_reply" yaml:"is_first_reply"`
-	CreatorID    int       `boil:"creator_id" json:"creator_id" toml:"creator_id" yaml:"creator_id"`
-	PostID       int       `boil:"post_id" json:"post_id" toml:"post_id" yaml:"post_id"`
-	TenantID     int       `boil:"tenant_id" json:"tenant_id" toml:"tenant_id" yaml:"tenant_id"`
+	CreatorID    int64     `boil:"creator_id" json:"creator_id" toml:"creator_id" yaml:"creator_id"`
+	PostID       int64     `boil:"post_id" json:"post_id" toml:"post_id" yaml:"post_id"`
+	TenantID     int64     `boil:"tenant_id" json:"tenant_id" toml:"tenant_id" yaml:"tenant_id"`
 	CreatedAt    time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
 	UpdatedAt    time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
 
@@ -83,22 +83,22 @@ var AnswerTableColumns = struct {
 
 // Generated where
 
-type whereHelperint struct{ field string }
+type whereHelperint64 struct{ field string }
 
-func (w whereHelperint) EQ(x int) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
-func (w whereHelperint) NEQ(x int) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
-func (w whereHelperint) LT(x int) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.LT, x) }
-func (w whereHelperint) LTE(x int) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
-func (w whereHelperint) GT(x int) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
-func (w whereHelperint) GTE(x int) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
-func (w whereHelperint) IN(slice []int) qm.QueryMod {
+func (w whereHelperint64) EQ(x int64) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
+func (w whereHelperint64) NEQ(x int64) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
+func (w whereHelperint64) LT(x int64) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.LT, x) }
+func (w whereHelperint64) LTE(x int64) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
+func (w whereHelperint64) GT(x int64) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
+func (w whereHelperint64) GTE(x int64) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
+func (w whereHelperint64) IN(slice []int64) qm.QueryMod {
 	values := make([]interface{}, 0, len(slice))
 	for _, value := range slice {
 		values = append(values, value)
 	}
 	return qm.WhereIn(fmt.Sprintf("%s IN ?", w.field), values...)
 }
-func (w whereHelperint) NIN(slice []int) qm.QueryMod {
+func (w whereHelperint64) NIN(slice []int64) qm.QueryMod {
 	values := make([]interface{}, 0, len(slice))
 	for _, value := range slice {
 		values = append(values, value)
@@ -168,23 +168,23 @@ func (w whereHelpertime_Time) GTE(x time.Time) qm.QueryMod {
 }
 
 var AnswerWhere = struct {
-	ID           whereHelperint
+	ID           whereHelperint64
 	Body         whereHelperstring
 	IsAccepted   whereHelperbool
 	IsFirstReply whereHelperbool
-	CreatorID    whereHelperint
-	PostID       whereHelperint
-	TenantID     whereHelperint
+	CreatorID    whereHelperint64
+	PostID       whereHelperint64
+	TenantID     whereHelperint64
 	CreatedAt    whereHelpertime_Time
 	UpdatedAt    whereHelpertime_Time
 }{
-	ID:           whereHelperint{field: "\"answers\".\"id\""},
+	ID:           whereHelperint64{field: "\"answers\".\"id\""},
 	Body:         whereHelperstring{field: "\"answers\".\"body\""},
 	IsAccepted:   whereHelperbool{field: "\"answers\".\"is_accepted\""},
 	IsFirstReply: whereHelperbool{field: "\"answers\".\"is_first_reply\""},
-	CreatorID:    whereHelperint{field: "\"answers\".\"creator_id\""},
-	PostID:       whereHelperint{field: "\"answers\".\"post_id\""},
-	TenantID:     whereHelperint{field: "\"answers\".\"tenant_id\""},
+	CreatorID:    whereHelperint64{field: "\"answers\".\"creator_id\""},
+	PostID:       whereHelperint64{field: "\"answers\".\"post_id\""},
+	TenantID:     whereHelperint64{field: "\"answers\".\"tenant_id\""},
 	CreatedAt:    whereHelpertime_Time{field: "\"answers\".\"created_at\""},
 	UpdatedAt:    whereHelpertime_Time{field: "\"answers\".\"updated_at\""},
 }
@@ -1521,7 +1521,7 @@ func Answers(mods ...qm.QueryMod) answerQuery {
 
 // FindAnswer retrieves a single record by ID with an executor.
 // If selectCols is empty Find will return all columns.
-func FindAnswer(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*Answer, error) {
+func FindAnswer(ctx context.Context, exec boil.ContextExecutor, iD int64, selectCols ...string) (*Answer, error) {
 	answerObj := &Answer{}
 
 	sel := "*"
@@ -2050,7 +2050,7 @@ func (o *AnswerSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) 
 }
 
 // AnswerExists checks if the Answer row exists.
-func AnswerExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+func AnswerExists(ctx context.Context, exec boil.ContextExecutor, iD int64) (bool, error) {
 	var exists bool
 	sql := "select exists(select 1 from \"answers\" where \"id\"=$1 limit 1)"
 

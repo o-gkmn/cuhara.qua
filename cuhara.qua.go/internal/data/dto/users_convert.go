@@ -25,6 +25,12 @@ func (r RegisterResponse) ToTypes() *types.RegisterResponse {
 
 func (u UpdateUserResponse) ToTypes() *types.UpdateUserResponse {
 	return &types.UpdateUserResponse{
-		ID: int64(u.ID),
+		ID: u.ID,
+	}
+}
+
+func (d DeleteUserResponse) ToTypes() *types.DeleteUserResponse {
+	return &types.DeleteUserResponse{
+		ID: d.ID,
 	}
 }

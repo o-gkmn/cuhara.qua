@@ -23,10 +23,10 @@ import (
 
 // Post is an object representing the database table.
 type Post struct {
-	ID         int       `boil:"id" json:"id" toml:"id" yaml:"id"`
-	CreatorID  int       `boil:"creator_id" json:"creator_id" toml:"creator_id" yaml:"creator_id"`
-	SubtopicID int       `boil:"subtopic_id" json:"subtopic_id" toml:"subtopic_id" yaml:"subtopic_id"`
-	TenantID   int       `boil:"tenant_id" json:"tenant_id" toml:"tenant_id" yaml:"tenant_id"`
+	ID         int64     `boil:"id" json:"id" toml:"id" yaml:"id"`
+	CreatorID  int64     `boil:"creator_id" json:"creator_id" toml:"creator_id" yaml:"creator_id"`
+	SubtopicID int64     `boil:"subtopic_id" json:"subtopic_id" toml:"subtopic_id" yaml:"subtopic_id"`
+	TenantID   int64     `boil:"tenant_id" json:"tenant_id" toml:"tenant_id" yaml:"tenant_id"`
 	CreatedAt  time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
 	UpdatedAt  time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
 
@@ -69,17 +69,17 @@ var PostTableColumns = struct {
 // Generated where
 
 var PostWhere = struct {
-	ID         whereHelperint
-	CreatorID  whereHelperint
-	SubtopicID whereHelperint
-	TenantID   whereHelperint
+	ID         whereHelperint64
+	CreatorID  whereHelperint64
+	SubtopicID whereHelperint64
+	TenantID   whereHelperint64
 	CreatedAt  whereHelpertime_Time
 	UpdatedAt  whereHelpertime_Time
 }{
-	ID:         whereHelperint{field: "\"posts\".\"id\""},
-	CreatorID:  whereHelperint{field: "\"posts\".\"creator_id\""},
-	SubtopicID: whereHelperint{field: "\"posts\".\"subtopic_id\""},
-	TenantID:   whereHelperint{field: "\"posts\".\"tenant_id\""},
+	ID:         whereHelperint64{field: "\"posts\".\"id\""},
+	CreatorID:  whereHelperint64{field: "\"posts\".\"creator_id\""},
+	SubtopicID: whereHelperint64{field: "\"posts\".\"subtopic_id\""},
+	TenantID:   whereHelperint64{field: "\"posts\".\"tenant_id\""},
 	CreatedAt:  whereHelpertime_Time{field: "\"posts\".\"created_at\""},
 	UpdatedAt:  whereHelpertime_Time{field: "\"posts\".\"updated_at\""},
 }
@@ -1526,7 +1526,7 @@ func Posts(mods ...qm.QueryMod) postQuery {
 
 // FindPost retrieves a single record by ID with an executor.
 // If selectCols is empty Find will return all columns.
-func FindPost(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*Post, error) {
+func FindPost(ctx context.Context, exec boil.ContextExecutor, iD int64, selectCols ...string) (*Post, error) {
 	postObj := &Post{}
 
 	sel := "*"
@@ -2055,7 +2055,7 @@ func (o *PostSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) er
 }
 
 // PostExists checks if the Post row exists.
-func PostExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+func PostExists(ctx context.Context, exec boil.ContextExecutor, iD int64) (bool, error) {
 	var exists bool
 	sql := "select exists(select 1 from \"posts\" where \"id\"=$1 limit 1)"
 

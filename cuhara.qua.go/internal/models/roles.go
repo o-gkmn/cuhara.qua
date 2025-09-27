@@ -23,9 +23,9 @@ import (
 
 // Role is an object representing the database table.
 type Role struct {
-	ID        int       `boil:"id" json:"id" toml:"id" yaml:"id"`
+	ID        int64     `boil:"id" json:"id" toml:"id" yaml:"id"`
 	Name      string    `boil:"name" json:"name" toml:"name" yaml:"name"`
-	TenantID  int       `boil:"tenant_id" json:"tenant_id" toml:"tenant_id" yaml:"tenant_id"`
+	TenantID  int64     `boil:"tenant_id" json:"tenant_id" toml:"tenant_id" yaml:"tenant_id"`
 	CreatedAt time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
 	UpdatedAt time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
 
@@ -64,15 +64,15 @@ var RoleTableColumns = struct {
 // Generated where
 
 var RoleWhere = struct {
-	ID        whereHelperint
+	ID        whereHelperint64
 	Name      whereHelperstring
-	TenantID  whereHelperint
+	TenantID  whereHelperint64
 	CreatedAt whereHelpertime_Time
 	UpdatedAt whereHelpertime_Time
 }{
-	ID:        whereHelperint{field: "\"roles\".\"id\""},
+	ID:        whereHelperint64{field: "\"roles\".\"id\""},
 	Name:      whereHelperstring{field: "\"roles\".\"name\""},
-	TenantID:  whereHelperint{field: "\"roles\".\"tenant_id\""},
+	TenantID:  whereHelperint64{field: "\"roles\".\"tenant_id\""},
 	CreatedAt: whereHelpertime_Time{field: "\"roles\".\"created_at\""},
 	UpdatedAt: whereHelpertime_Time{field: "\"roles\".\"updated_at\""},
 }
@@ -1125,7 +1125,7 @@ func Roles(mods ...qm.QueryMod) roleQuery {
 
 // FindRole retrieves a single record by ID with an executor.
 // If selectCols is empty Find will return all columns.
-func FindRole(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*Role, error) {
+func FindRole(ctx context.Context, exec boil.ContextExecutor, iD int64, selectCols ...string) (*Role, error) {
 	roleObj := &Role{}
 
 	sel := "*"
@@ -1654,7 +1654,7 @@ func (o *RoleSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) er
 }
 
 // RoleExists checks if the Role row exists.
-func RoleExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+func RoleExists(ctx context.Context, exec boil.ContextExecutor, iD int64) (bool, error) {
 	var exists bool
 	sql := "select exists(select 1 from \"roles\" where \"id\"=$1 limit 1)"
 

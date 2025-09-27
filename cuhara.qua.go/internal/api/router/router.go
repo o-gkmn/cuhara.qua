@@ -67,12 +67,12 @@ func Init(s *api.Server) error {
 	}
 
 	s.Router = &api.Router{
-		Routes:    nil,
-		Root:      s.Echo.Group(""),
-		APIV1Auth: s.Echo.Group("/api/v1/auth"),
-		APIV1Users: s.Echo.Group("/api/v1/users"),
-		APIV1Roles: s.Echo.Group("/api/v1/roles"),
-		APIV1Tennants: s.Echo.Group("/api/v1/tennants"),
+		Routes:        nil,
+		Root:          s.Echo.Group(""),
+		APIV1Auth:     s.Echo.Group("/api/v1/auth"),
+		APIV1Users:    s.Echo.Group("/api/v1/users"),
+		APIV1Roles:    s.Echo.Group("/api/v1/roles"),
+		APIV1Tennants: s.Echo.Group("/api/v1/tenants"),
 	}
 
 	handlers.AttachAllRoutes(s)

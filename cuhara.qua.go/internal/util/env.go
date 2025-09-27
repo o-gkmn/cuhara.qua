@@ -1,7 +1,6 @@
 package util
 
 import (
-	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -10,7 +9,6 @@ import (
 )
 
 func GetEnv(key string, defaultVal string) string {
-	log.Printf("ENV: %s : %s", key, defaultVal)
 	if val, ok := os.LookupEnv(key); ok {
 		return val
 	}
@@ -59,7 +57,7 @@ func GetEnvAsBool(key string, defaultVal bool) bool {
 }
 
 func GetEnvAsGormLogLevel(key string, defaultVal logger.LogLevel) logger.LogLevel {
-	strVal := strings.ToUpper(strings.TrimSpace(GetEnv(key, string(defaultVal))))
+	strVal := strings.ToUpper(strings.TrimSpace(GetEnv(key, strconv.Itoa(int(defaultVal)))))
 
 	switch strVal {
 	case "SILENT":

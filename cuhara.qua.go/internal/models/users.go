@@ -23,12 +23,12 @@ import (
 
 // User is an object representing the database table.
 type User struct {
-	ID         int       `boil:"id" json:"id" toml:"id" yaml:"id"`
+	ID         int64     `boil:"id" json:"id" toml:"id" yaml:"id"`
 	Name       string    `boil:"name" json:"name" toml:"name" yaml:"name"`
 	Email      string    `boil:"email" json:"email" toml:"email" yaml:"email"`
 	VSCAccount string    `boil:"vsc_account" json:"vsc_account" toml:"vsc_account" yaml:"vsc_account"`
-	RoleID     int       `boil:"role_id" json:"role_id" toml:"role_id" yaml:"role_id"`
-	TenantID   int       `boil:"tenant_id" json:"tenant_id" toml:"tenant_id" yaml:"tenant_id"`
+	RoleID     int64     `boil:"role_id" json:"role_id" toml:"role_id" yaml:"role_id"`
+	TenantID   int64     `boil:"tenant_id" json:"tenant_id" toml:"tenant_id" yaml:"tenant_id"`
 	CreatedAt  time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
 	UpdatedAt  time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
 	Password   string    `boil:"password" json:"password" toml:"password" yaml:"password"`
@@ -84,22 +84,22 @@ var UserTableColumns = struct {
 // Generated where
 
 var UserWhere = struct {
-	ID         whereHelperint
+	ID         whereHelperint64
 	Name       whereHelperstring
 	Email      whereHelperstring
 	VSCAccount whereHelperstring
-	RoleID     whereHelperint
-	TenantID   whereHelperint
+	RoleID     whereHelperint64
+	TenantID   whereHelperint64
 	CreatedAt  whereHelpertime_Time
 	UpdatedAt  whereHelpertime_Time
 	Password   whereHelperstring
 }{
-	ID:         whereHelperint{field: "\"users\".\"id\""},
+	ID:         whereHelperint64{field: "\"users\".\"id\""},
 	Name:       whereHelperstring{field: "\"users\".\"name\""},
 	Email:      whereHelperstring{field: "\"users\".\"email\""},
 	VSCAccount: whereHelperstring{field: "\"users\".\"vsc_account\""},
-	RoleID:     whereHelperint{field: "\"users\".\"role_id\""},
-	TenantID:   whereHelperint{field: "\"users\".\"tenant_id\""},
+	RoleID:     whereHelperint64{field: "\"users\".\"role_id\""},
+	TenantID:   whereHelperint64{field: "\"users\".\"tenant_id\""},
 	CreatedAt:  whereHelpertime_Time{field: "\"users\".\"created_at\""},
 	UpdatedAt:  whereHelpertime_Time{field: "\"users\".\"updated_at\""},
 	Password:   whereHelperstring{field: "\"users\".\"password\""},
@@ -1947,7 +1947,7 @@ func Users(mods ...qm.QueryMod) userQuery {
 
 // FindUser retrieves a single record by ID with an executor.
 // If selectCols is empty Find will return all columns.
-func FindUser(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*User, error) {
+func FindUser(ctx context.Context, exec boil.ContextExecutor, iD int64, selectCols ...string) (*User, error) {
 	userObj := &User{}
 
 	sel := "*"
@@ -2476,7 +2476,7 @@ func (o *UserSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) er
 }
 
 // UserExists checks if the User row exists.
-func UserExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+func UserExists(ctx context.Context, exec boil.ContextExecutor, iD int64) (bool, error) {
 	var exists bool
 	sql := "select exists(select 1 from \"users\" where \"id\"=$1 limit 1)"
 
