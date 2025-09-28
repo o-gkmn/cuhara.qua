@@ -9,3 +9,9 @@ func (r RoleDTO) ToTypes() *types.RoleResponse {
 		Tenant: r.Tenant.ToTypes(),
 	}
 }
+
+func (c CreateRoleResponse) ToTypes() *types.CreateRoleResponse {
+	return &types.CreateRoleResponse{
+		ID: c.ID,
+	}
+}

@@ -17,6 +17,7 @@ func AttachAllRoutes(s *api.Server) {
 		auth.LoginRouter(s),
 		auth.RegisterRouter(s),
 		roles.GetAllRouter(s),
+		roles.CreateRoleRouter(s),
 		users.GetUsersRouter(s),
 		users.UpdateUserRoute(s),
 		users.DeleteUserRoute(s),

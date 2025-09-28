@@ -160,6 +160,23 @@ paths:
           schema:
             $ref: "#/definitions/roleResponse"
 
+    post:
+      tags:
+        - role
+      summary: Create role
+      description: Create a new role
+      parameters:
+        - name: createRole
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/createRoleRequest"
+      responses:
+        200:
+          description: Role created successfully
+          schema:
+            $ref: "#/definitions/createRoleResponse"
+
 parameters:
   IDPathParam:
     name: id
@@ -169,6 +186,28 @@ parameters:
     type: integer
 
 definitions:
+  createRoleResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+        
+  createRoleRequest:
+    type: object
+    required:
+      - name
+      - tenant
+    properties:
+      name:
+        type: string
+      tenant:
+        type: object
+        required:
+          - id
+        properties:
+          id:
+            type: integer
+
   roleResponse:
     type: object
     properties:
