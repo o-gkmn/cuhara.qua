@@ -1,0 +1,7 @@
+# cuhara.qua.go/docs/oapi-codegen.types.yml
+package: types
+generate:
+  models: true
+  embedded-spec: true 
+output-options:
+  skip-prune: true

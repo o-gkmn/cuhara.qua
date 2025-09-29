@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"cuhara.qua.go/internal/types"
-	"github.com/go-openapi/swag"
 	"github.com/labstack/echo/v4"
 )
 
@@ -16,34 +15,34 @@ const (
 )
 
 type HTTPError struct {
-	types.PublicHTTPError
+	types.PublicHttpError
 	Internal       error                  `json:"-"`
 	AdditionalData map[string]interface{} `json:"-"`
 }
 
 type HTTPValidationError struct {
-	types.PublicHTTPValidationError
+	types.PublicHttpValidationError
 	Internal       error
 	AdditionalData map[string]interface{} `json:"-"`
 }
 
 func NewHTTPError(code int, errorType string, title string) *HTTPError {
 	return &HTTPError{
-		PublicHTTPError: types.PublicHTTPError{
-			Code:  swag.Int64(int64(code)),
-			Type:  swag.String(errorType),
-			Title: swag.String(title),
+		PublicHttpError: types.PublicHttpError{
+			Code:  int64(code),
+			Type:  errorType,
+			Title: title,
 		},
 	}
 }
 
 func NewHTTPErroWithDetail(code int, errorType, title, detail string) *HTTPError {
 	return &HTTPError{
-		PublicHTTPError: types.PublicHTTPError{
-			Code:   swag.Int64(int64(code)),
-			Type:   swag.String(errorType),
-			Title:  swag.String(title),
-			Detail: *swag.String(detail),
+		PublicHttpError: types.PublicHttpError{
+			Code:   int64(code),
+			Type:   errorType,
+			Title:  title,
+			Detail: &detail,
 		},
 	}
 }
@@ -55,9 +54,9 @@ func NewFromEcho(e *echo.HTTPError) *HTTPError {
 func (e *HTTPError) Error() string {
 	var b strings.Builder
 
-	fmt.Fprintf(&b, "HTTPError %d (%s): %s", *e.Code, *e.Type, *e.Title)
+	fmt.Fprintf(&b, "HTTPError %d (%s): %s", e.Code, e.Type, e.Title)
 
-	if len(e.Detail) > 0 {
+	if e.Detail != nil {
 		fmt.Fprintf(&b, " - %s", e.Detail)
 	}
 	if e.Internal != nil {
@@ -82,28 +81,24 @@ func (e *HTTPError) Error() string {
 	return b.String()
 }
 
-func NewHTTPValidationError(code int, errorType, title string, validationErrors []*types.HTTPValidationErrorDetail) *HTTPValidationError {
+func NewHTTPValidationError(code int, errorType, title string, validationErrors []types.HttpValidationErrorDetail) *HTTPValidationError {
 	return &HTTPValidationError{
-		PublicHTTPValidationError: types.PublicHTTPValidationError{
-			PublicHTTPError: types.PublicHTTPError{
-				Code:  swag.Int64(int64(code)),
-				Type:  swag.String(errorType),
-				Title: swag.String(title),
-			},
+		PublicHttpValidationError: types.PublicHttpValidationError{
+			Code:             int64(code),
+			Type:             errorType,
+			Title:            title,
 			ValidationErrors: validationErrors,
 		},
 	}
 }
 
-func NewHTTPValidationErrorWithDetail(code int, errorType, title, detail string, validationErrors []*types.HTTPValidationErrorDetail) *HTTPValidationError {
+func NewHTTPValidationErrorWithDetail(code int, errorType, title, detail string, validationErrors []types.HttpValidationErrorDetail) *HTTPValidationError {
 	return &HTTPValidationError{
-		PublicHTTPValidationError: types.PublicHTTPValidationError{
-			PublicHTTPError: types.PublicHTTPError{
-				Code:   swag.Int64(int64(code)),
-				Type:   swag.String(errorType),
-				Title:  swag.String(title),
-				Detail: detail,
-			},
+		PublicHttpValidationError: types.PublicHttpValidationError{
+			Code:             int64(code),
+			Type:             errorType,
+			Title:            title,
+			Detail:           &detail,
 			ValidationErrors: validationErrors,
 		},
 	}
@@ -112,9 +107,9 @@ func NewHTTPValidationErrorWithDetail(code int, errorType, title, detail string,
 func (e *HTTPValidationError) Error() string {
 	var b strings.Builder
 
-	fmt.Fprintf(&b, "HTTPValidationError %d (%s): %s", *e.Code, *e.Type, *e.Title)
+	fmt.Fprintf(&b, "HTTPValidationError %d (%s): %s", e.Code, e.Type, e.Title)
 
-	if len(e.Detail) > 0 {
+	if e.Detail != nil {
 		fmt.Fprintf(&b, " - %s", e.Detail)
 	}
 	if e.Internal != nil {
@@ -138,7 +133,7 @@ func (e *HTTPValidationError) Error() string {
 
 	b.WriteString(" - Validation: ")
 	for i, ve := range e.ValidationErrors {
-		fmt.Fprintf(&b, "%s (in %s): %s", *ve.Key, *ve.In, *ve.Error)
+		fmt.Fprintf(&b, "%s (in %s): %s", ve.Key, ve.In, ve.Error)
 		if i < len(e.ValidationErrors) {
 			b.WriteString(", ")
 		}

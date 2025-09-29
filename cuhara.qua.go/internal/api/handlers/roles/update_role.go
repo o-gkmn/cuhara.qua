@@ -33,7 +33,7 @@ func updateRoleHandler(s *api.Server) echo.HandlerFunc {
 
 		res, err := s.Role.Update(ctx, dto.UpdateRoleRequest{
 			ID:   id,
-			Name: util.StringToPtr(body.Name),
+			Name: body.Name,
 		})
 		if err != nil {
 			return err

@@ -1,0 +1,929 @@
+openapi: 3.0.1
+info:
+  title: HTTP Error Models
+  description: Only HTTP error models retained
+  version: 0.1.0
+servers:
+  - url: /
+security:
+  - BearerAuth: []
+paths:
+  /api/v1/auth/login:
+    post:
+      tags:
+        - auth
+      summary: Login
+      description: Login to the system
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/loginRequest"
+        required: true
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/loginResponse"
+      security: []
+      x-codegen-request-body-name: login
+  /api/v1/auth/register:
+    post:
+      tags:
+        - auth
+      summary: Register
+      description: Register a new user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/registerRequest"
+        required: true
+      responses:
+        "200":
+          description: Register successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/registerResponse"
+      security: []
+      x-codegen-request-body-name: register
+  /api/v1/users:
+    get:
+      tags:
+        - users
+      summary: Get users
+      description: Get all users
+      responses:
+        "200":
+          description: Users fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/userResponse"
+    put:
+      tags:
+        - users
+      summary: Update user
+      description: Update a user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/updateUserRequest"
+        required: true
+      responses:
+        "200":
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/updateUserResponse"
+      x-codegen-request-body-name: updateUser
+  /api/v1/users/{id}:
+    delete:
+      tags:
+        - users
+      summary: Delete user
+      description: Delete a user
+      parameters:
+        - name: id
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/deleteUserResponse"
+  /api/v1/tenants:
+    get:
+      tags:
+        - tenant
+      summary: Get tenants
+      description: Get all tenants
+      responses:
+        "200":
+          description: tenants fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tenantResponse"
+    post:
+      tags:
+        - tenant
+      summary: Create tenant
+      description: Create a new tenant
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/createTenantRequest"
+        required: true
+      responses:
+        "200":
+          description: Tenant created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createTenantResponse"
+      x-codegen-request-body-name: createTenant
+  /api/v1/tenants/{id}:
+    delete:
+      tags:
+        - tenant
+      summary: Delete tenant
+      description: Delete a tenant
+      parameters:
+        - name: id
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Tenant deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/deleteTenantResponse"
+    patch:
+      tags:
+        - tenant
+      summary: Update tenant
+      description: Update a tenant
+      parameters:
+        - name: id
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/updateTenantRequest"
+        required: true
+      responses:
+        "200":
+          description: Tenant updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/updateTenantResponse"
+      x-codegen-request-body-name: updateTenant
+  /api/v1/roles:
+    get:
+      tags:
+        - role
+      summary: Get roles
+      description: Get all roles
+      responses:
+        "200":
+          description: Roles fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/roleResponse"
+    post:
+      tags:
+        - role
+      summary: Create role
+      description: Create a new role
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/createRoleRequest"
+        required: true
+      responses:
+        "200":
+          description: Role created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createRoleResponse"
+      x-codegen-request-body-name: createRole
+  /api/v1/roles/{id}:
+    delete:
+      tags:
+        - role
+      summary: Delete role
+      description: Delete a role
+      parameters:
+        - name: id
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Role deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/deleteRoleResponse"
+    patch:
+      tags:
+        - role
+      summary: Update role
+      description: Update a role
+      parameters:
+        - name: id
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/updateRoleRequest"
+        required: true
+      responses:
+        "200":
+          description: Role updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/updateRoleResponse"
+      x-codegen-request-body-name: updateRole
+  /api/v1/topics:
+    get:
+      tags:
+        - topic
+      summary: Get topics
+      description: Get all topics
+      responses:
+        "200":
+          description: Topics fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/topicResponse"
+    post:
+      tags:
+        - topic
+      summary: Create topic
+      description: Create a new topic
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/createTopicRequest"
+        required: true
+      responses:
+        "200":
+          description: Topic created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createTopicResponse"
+      x-codegen-request-body-name: createTopic
+  /api/v1/topics/{id}:
+    delete:
+      tags:
+        - topic
+      summary: Delete topic
+      description: Delete a topic
+      parameters:
+        - name: id
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Topic deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/deleteTopicResponse"
+    patch:
+      tags:
+        - topic
+      summary: Update topic
+      description: Update a topic
+      parameters:
+        - name: id
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/updateTopicRequest"
+        required: true
+      responses:
+        "200":
+          description: Topic updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/updateTopicResponse"
+      x-codegen-request-body-name: updateTopic
+  /api/v1/topics/{id}/sub-topics:
+    get:
+      tags:
+        - topic
+      summary: Get sub topics
+      description: Get all sub topics
+      parameters:
+        - name: id
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Sub topics fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/subTopicResponse"
+    post:
+      tags:
+        - topic
+      summary: Create sub topic
+      description: Create a new sub topic
+      parameters:
+        - name: id
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/createSubTopicRequest"
+        required: true
+      responses:
+        "200":
+          description: Sub topic created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createSubTopicResponse"
+      x-codegen-request-body-name: createSubTopic
+  /api/v1/topics/{id}/sub-topics/{subId}:
+    delete:
+      tags:
+        - topic
+      summary: Delete sub topic
+      description: Delete a sub topic
+      parameters:
+        - name: id
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: integer
+        - name: subId
+          in: path
+          description: Sub topic ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Sub topic deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/deleteSubTopicResponse"
+    patch:
+      tags:
+        - topic
+      summary: Update sub topic
+      description: Update a sub topic
+      parameters:
+        - name: id
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: integer
+        - name: subId
+          in: path
+          description: Sub topic ID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/updateSubTopicRequest"
+        required: true
+      responses:
+        "200":
+          description: Sub topic updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/updateSubTopicResponse"
+      x-codegen-request-body-name: updateSubTopic
+  /api/v1/claims:
+    get:
+      tags:
+        - claim
+      summary: Get claims
+      description: Get all claims
+      responses:
+        "200":
+          description: Claims fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/claimResponse"
+    post:
+      tags:
+        - claim
+      summary: Create claim
+      description: Create a new claim
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/createClaimRequest"
+        required: true
+      responses:
+        "200":
+          description: Claim created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createClaimResponse"
+      x-codegen-request-body-name: createClaim
+  /api/v1/claims/{id}:
+    delete:
+      tags:
+        - claim
+      summary: Delete claim
+      description: Delete a claim
+      parameters:
+        - name: id
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Claim deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/deleteClaimResponse"
+    patch:
+      tags:
+        - claim
+      summary: Update claim
+      description: Update a claim
+      parameters:
+        - name: id
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/updateClaimRequest"
+        required: true
+      responses:
+        "200":
+          description: Claim updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/updateClaimResponse"
+      x-codegen-request-body-name: updateClaim
+components:
+  schemas:
+    deleteClaimResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          x-oapi-codegen-extra-tags:
+            validate: gte=0
+    updateClaimResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+    updateClaimRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+    createClaimResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+    createClaimRequest:
+      required:
+        - description
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+    claimResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        description:
+          type: string
+    deleteSubTopicResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+    updateSubTopicResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+    updateSubTopicRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        topic:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+    createSubTopicResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+    createSubTopicRequest:
+      required:
+        - name
+        - topic
+      type: object
+      properties:
+        name:
+          type: string
+        topic:
+          required:
+            - id
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+    subTopicResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        topic:
+          $ref: "#/components/schemas/topicResponse"
+    deleteTopicResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+    updateTopicResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+    updateTopicRequest:
+      type: object
+      properties:
+        name:
+          type: string
+    createTopicResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+    createTopicRequest:
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+    topicResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+    deleteRoleResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+    updateRoleResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+    updateRoleRequest:
+      type: object
+      properties:
+        name:
+          type: string
+    createRoleResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+    createRoleRequest:
+      required:
+        - name
+        - tenant
+      type: object
+      properties:
+        name:
+          type: string
+        tenant:
+          required:
+            - id
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+    roleResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        tenant:
+          $ref: "#/components/schemas/tenantResponse"
+    deleteTenantResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+    updateTenantRequest:
+      type: object
+      properties:
+        name:
+          type: string
+    updateTenantResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+    createTenantRequest:
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+    createTenantResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+    tenantResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+    deleteUserRequest:
+      type: integer
+      format: int64
+    deleteUserResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+    updateUserRequest:
+      required:
+        - id
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        email:
+          type: string
+        vscAccount:
+          type: string
+        role:
+          required:
+            - id
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+    updateUserResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+    userResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        email:
+          type: string
+        vscAccount:
+          type: string
+    loginRequest:
+      required:
+        - email
+        - password
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    loginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+    registerRequest:
+      required:
+        - email
+        - name
+        - password
+        - roleID
+        - tenantID
+        - vscAccount
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        vscAccount:
+          type: string
+        roleID:
+          type: integer
+          format: int64
+        tenantID:
+          type: integer
+          format: int64
+    registerResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+    httpValidationErrorDetail:
+      required:
+        - error
+        - in
+        - key
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error describing field validation failure
+        in:
+          type: string
+          description: Indicates how the invalid field was provided
+        key:
+          type: string
+          description: Key of field failing validation
+    publicHttpError:
+      required:
+        - status
+        - title
+        - type
+      type: object
+      properties:
+        detail:
+          type: string
+          description:
+            "More detailed, human-readable, optional explanation of the\
+            \ error"
+          example: User is lacking permission to access this resource
+        status:
+          maximum: 599
+          minimum: 100
+          type: integer
+          description: HTTP status code returned for the error
+          format: int64
+          example: 403
+          x-go-name: Code
+        title:
+          type: string
+          description: "Short, human-readable description of the error"
+          example: Forbidden
+        type:
+          type: string
+          description:
+            "Type of error returned, should be used for client-side error\
+            \ handling"
+          example: generic
+    publicHttpValidationError:
+      allOf:
+        - $ref: "#/components/schemas/publicHttpError"
+        - type: object
+          required:
+            - validationErrors
+          properties:
+            validationErrors:
+              type: array
+              description: List of errors received while validating payload against schema
+              items:
+                $ref: "#/components/schemas/httpValidationErrorDetail"
+  parameters:
+    SubIDPathParam:
+      name: subId
+      in: path
+      description: Sub topic ID
+      required: true
+      schema:
+        type: integer
+        format: int64
+    IDPathParam:
+      name: id
+      in: path
+      description: User ID
+      required: true
+      schema:
+        type: integer
+        format: int64
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: Bearer
+      description:
+        "JWT Authorization header using the Bearer scheme. Example: \"\
+        Authorization: Bearer {token}\""
+      name: Authorization
+      in: header
+x-original-swagger-version: "2.0"

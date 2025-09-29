@@ -7,7 +7,6 @@ import (
 	"cuhara.qua.go/internal/data/dto"
 	"cuhara.qua.go/internal/types"
 	"cuhara.qua.go/internal/util"
-	"github.com/go-openapi/swag/conv"
 	"github.com/labstack/echo/v4"
 )
 
@@ -25,7 +24,7 @@ func createTopicHandler(s *api.Server) echo.HandlerFunc {
 		}
 
 		res, err := s.Topic.Create(ctx, dto.CreateTopicRequest{
-			Name: conv.Value(body.Name),
+			Name: body.Name,
 		})
 		if err != nil {
 			return err

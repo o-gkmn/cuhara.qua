@@ -33,8 +33,8 @@ func updateClaimHandler(s *api.Server) echo.HandlerFunc {
 
 		res, err := s.Claim.Update(ctx, dto.UpdateClaimRequest{
 			ID:          id,
-			Name:        util.StringToPtr(body.Name),
-			Description: util.StringToPtr(body.Description),
+			Name:        body.Name,
+			Description: body.Description,
 		})
 		if err != nil {
 			return err

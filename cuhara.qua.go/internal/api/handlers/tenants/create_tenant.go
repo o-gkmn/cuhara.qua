@@ -7,7 +7,6 @@ import (
 	"cuhara.qua.go/internal/data/dto"
 	"cuhara.qua.go/internal/types"
 	"cuhara.qua.go/internal/util"
-	"github.com/go-openapi/swag"
 	"github.com/labstack/echo/v4"
 )
 
@@ -25,7 +24,7 @@ func createTenantHandler(s *api.Server) echo.HandlerFunc {
 		}
 
 		res, err := s.Tennant.Create(ctx, dto.CreateTenantRequest{
-			Name: swag.StringValue(body.Name),
+			Name: body.Name,
 		})
 
 		if err != nil {

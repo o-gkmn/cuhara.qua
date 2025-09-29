@@ -24,11 +24,11 @@ func registerHandler(s *api.Server) echo.HandlerFunc {
 		}
 
 		res, err := s.Auth.Register(ctx, dto.RegisterRequest{
-			Email:      util.PtrToString(body.Email),
-			Password:   util.PtrToString(body.Password),
-			VscAccount: util.PtrToString(body.VscAccount),
-			RoleID:     util.PtrToInt64(body.RoleID),
-			TenantID:   util.PtrToInt64(body.TenantID),
+			Email:      body.Email,
+			Password:   body.Password,
+			VscAccount: body.VscAccount,
+			RoleID:     body.RoleID,
+			TenantID:   body.TenantID,
 		})
 		if err != nil {
 			return err

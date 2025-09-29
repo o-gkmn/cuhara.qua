@@ -7,7 +7,6 @@ import (
 	"cuhara.qua.go/internal/data/dto"
 	"cuhara.qua.go/internal/types"
 	"cuhara.qua.go/internal/util"
-	"github.com/go-openapi/swag/conv"
 	"github.com/labstack/echo/v4"
 )
 
@@ -25,8 +24,8 @@ func createClaimHandler(s *api.Server) echo.HandlerFunc {
 		}
 
 		res, err := s.Claim.Create(ctx, dto.CreateClaimRequest{
-			Name:        conv.Value(body.Name),
-			Description: body.Description,
+			Name:        body.Name,
+			Description: &body.Description,
 		})
 		if err != nil {
 			return err

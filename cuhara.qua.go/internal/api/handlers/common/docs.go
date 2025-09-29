@@ -11,6 +11,6 @@ func DocsRouter(s *api.Server) *echo.Route {
 
 func docsHandler(_ *api.Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		return c.File("docs/swagger.yml")
+		return c.File("api/swagger.yml")
 	}
 }

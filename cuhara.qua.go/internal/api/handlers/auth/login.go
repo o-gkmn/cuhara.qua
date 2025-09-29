@@ -8,7 +8,6 @@ import (
 	"cuhara.qua.go/internal/types"
 
 	"cuhara.qua.go/internal/util"
-	"github.com/go-openapi/swag"
 	"github.com/labstack/echo/v4"
 )
 
@@ -26,8 +25,8 @@ func loginHandler(s *api.Server) echo.HandlerFunc {
 		}
 
 		res, err := s.Auth.Login(ctx, dto.LoginRequest{
-			Email:    swag.StringValue(body.Email),
-			Password: swag.StringValue(body.Password),
+			Email:    body.Email,
+			Password: body.Password,
 		})
 		if err != nil {
 			return err

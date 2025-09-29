@@ -33,7 +33,7 @@ func updateTenantHandler(s *api.Server) echo.HandlerFunc {
 
 		res, err := s.Tennant.Update(ctx, dto.UpdateTenantRequest{
 			ID:   id,
-			Name: util.StringToPtr(body.Name),
+			Name: body.Name,
 		})
 		if err != nil {
 			return err

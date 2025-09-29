@@ -7,10 +7,9 @@ import (
 	"net/http"
 
 	"cuhara.qua.go/internal/api/httperrors"
-	"cuhara.qua.go/internal/config"
 	"cuhara.qua.go/internal/types"
+	"cuhara.qua.go/internal/config"
 	"cuhara.qua.go/internal/util"
-	"github.com/go-openapi/swag"
 	"github.com/labstack/echo/v4"
 	"github.com/timewasted/go-accept-headers"
 )
@@ -40,7 +39,7 @@ func HTTPErrorHandlerWithConfig(config HTTPErrorHandlerConfig) echo.HTTPErrorHan
 
 		switch {
 		case errors.As(err, &httpError):
-			code = *httpError.Code
+			code = httpError.Code
 			he = httpError
 
 			if code == http.StatusInternalServerError && config.HideInternalServerErrorDetails {
@@ -48,11 +47,11 @@ func HTTPErrorHandlerWithConfig(config HTTPErrorHandlerConfig) echo.HTTPErrorHan
 					httpError.Internal = fmt.Errorf("internal Error: %s", httpError)
 				}
 
-				httpError.Title = swag.String(http.StatusText(http.StatusInternalServerError))
+				httpError.Title = http.StatusText(http.StatusInternalServerError)
 			}
 
 		case errors.As(err, &httpValidationError):
-			code = *httpValidationError.Code
+			code = httpValidationError.Code
 			he = httpValidationError
 
 			if code == http.StatusInternalServerError && config.HideInternalServerErrorDetails {
@@ -61,7 +60,7 @@ func HTTPErrorHandlerWithConfig(config HTTPErrorHandlerConfig) echo.HTTPErrorHan
 				}
 			}
 
-			httpValidationError.Title = swag.String(http.StatusText(http.StatusInternalServerError))
+			httpValidationError.Title = http.StatusText(http.StatusInternalServerError)
 
 		case errors.As(err, &echoHTTPError):
 			code = int64(echoHTTPError.Code)
@@ -72,10 +71,10 @@ func HTTPErrorHandlerWithConfig(config HTTPErrorHandlerConfig) echo.HTTPErrorHan
 				}
 
 				he = &httperrors.HTTPError{
-					PublicHTTPError: types.PublicHTTPError{
-						Code:  swag.Int64(int64(echoHTTPError.Code)),
-						Type:  swag.String(httperrors.HTTPErrorTypeGeneric),
-						Title: swag.String(http.StatusText(http.StatusInternalServerError)),
+					PublicHttpError: types.PublicHttpError{
+						Code:  int64(echoHTTPError.Code),
+						Type:  httperrors.HTTPErrorTypeGeneric,
+						Title: http.StatusText(http.StatusInternalServerError),
 					},
 				}
 			} else {
@@ -90,10 +89,10 @@ func HTTPErrorHandlerWithConfig(config HTTPErrorHandlerConfig) echo.HTTPErrorHan
 				}
 
 				he = &httperrors.HTTPError{
-					PublicHTTPError: types.PublicHTTPError{
-						Code:  swag.Int64(int64(echoHTTPError.Code)),
-						Title: &msg,
-						Type:  swag.String(httperrors.HTTPErrorTypeGeneric),
+					PublicHttpError: types.PublicHttpError{
+						Code:  int64(echoHTTPError.Code),
+						Title: msg,
+						Type:  httperrors.HTTPErrorTypeGeneric,
 					},
 					Internal: echoHTTPError.Internal,
 				}
@@ -103,18 +102,18 @@ func HTTPErrorHandlerWithConfig(config HTTPErrorHandlerConfig) echo.HTTPErrorHan
 			code = http.StatusInternalServerError
 			if config.HideInternalServerErrorDetails {
 				he = &httperrors.HTTPError{
-					PublicHTTPError: types.PublicHTTPError{
-						Code:  swag.Int64(http.StatusInternalServerError),
-						Type:  swag.String(httperrors.HTTPErrorTypeGeneric),
-						Title: swag.String(http.StatusText(http.StatusInternalServerError)),
+					PublicHttpError: types.PublicHttpError{
+						Code:  http.StatusInternalServerError,
+						Type:  httperrors.HTTPErrorTypeGeneric,
+						Title: http.StatusText(http.StatusInternalServerError),
 					},
 				}
 			} else {
 				he = &httperrors.HTTPError{
-					PublicHTTPError: types.PublicHTTPError{
-						Code:  swag.Int64(http.StatusInternalServerError),
-						Title: swag.String(err.Error()),
-						Type:  swag.String(httperrors.HTTPErrorTypeGeneric),
+					PublicHttpError: types.PublicHttpError{
+						Code:  http.StatusInternalServerError,
+						Title: err.Error(),
+						Type:  httperrors.HTTPErrorTypeGeneric,
 					},
 				}
 			}

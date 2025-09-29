@@ -4,51 +4,51 @@ import "cuhara.qua.go/internal/types"
 
 func (t *TopicDTO) ToTypes() *types.TopicResponse {
 	return &types.TopicResponse{
-		ID:   t.ID,
-		Name: t.Name,
+		Id:   &t.ID,
+		Name: &t.Name,
 	}
 }
 
 func (c *CreateTopicResponse) ToTypes() *types.CreateTopicResponse {
 	return &types.CreateTopicResponse{
-		ID: c.ID,
+		Id: &c.ID,
 	}
 }
 
 func (u *UpdateTopicResponse) ToTypes() *types.UpdateTopicResponse {
 	return &types.UpdateTopicResponse{
-		ID: u.ID,
+		Id: &u.ID,
 	}
 }
 
 func (d *DeleteTopicResponse) ToTypes() *types.DeleteTopicResponse {
 	return &types.DeleteTopicResponse{
-		ID: d.ID,
+		Id: &d.ID,
 	}
 }
 
 func (s *SubTopicDTO) ToTypes() *types.SubTopicResponse {
 	return &types.SubTopicResponse{
-		ID:   s.ID,
-		Name: s.Name,
+		Id:   &s.ID,
+		Name: &s.Name,
 		Topic: s.Topic.ToTypes(),
 	}
 }
 
 func (c *CreateSubTopicResponse) ToTypes() *types.CreateSubTopicResponse {
 	return &types.CreateSubTopicResponse{
-		ID: c.ID,
+		Id: &c.ID,
 	}
 }
 
 func (u *UpdateSubTopicResponse) ToTypes() *types.UpdateSubTopicResponse {
 	return &types.UpdateSubTopicResponse{
-		ID: u.ID,
+		Id: &u.ID,
 	}
 }
 
 func (d *DeleteSubTopicResponse) ToTypes() *types.DeleteSubTopicResponse {
 	return &types.DeleteSubTopicResponse{
-		ID: d.ID,
+		Id: &d.ID,
 	}
 }
