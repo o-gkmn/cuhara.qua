@@ -561,14 +561,14 @@ definitions:
     properties:
       id:
         type: integer
-        x-go-type: int
+
 
   updateRoleResponse:
     type: object
     properties:
       id:
         type: integer
-        x-go-type: int
+
 
   updateRoleRequest:
     type: object
@@ -613,7 +613,6 @@ definitions:
     properties:
       id:
         type: integer
-        x-go-type: int
 
   updateTenantRequest:
     type: object
@@ -626,7 +625,6 @@ definitions:
     properties:
       id:
         type: integer
-        x-go-type: int
 
   createTenantRequest:
     type: object
@@ -641,26 +639,22 @@ definitions:
     properties:
       id:
         type: integer
-        x-go-type: int
 
   tenantResponse:
     type: object
     properties:
       id:
         type: integer
-        x-go-type: int
       name:
         type: string
 
   deleteUserRequest:
     type: integer
-    x-go-type: int
   deleteUserResponse:
     type: object
     properties:
       id:
         type: integer
-        x-go-type: int
 
   updateUserRequest:
     type: object
@@ -669,7 +663,6 @@ definitions:
     properties:
       id:
         type: integer
-        x-go-type: int
       name:
         type: string
       email:
@@ -683,21 +676,18 @@ definitions:
         properties:
           id:
             type: integer
-            x-go-type: int
 
   updateUserResponse:
     type: object
     properties:
       id:
         type: integer
-        x-go-type: int
 
   userResponse:
     type: object
     properties:
       id:
         type: integer
-        x-go-type: int
       name:
         type: string
       email:
@@ -742,17 +732,17 @@ definitions:
         type: string
       roleID:
         type: integer
-        x-go-type: int
+
       tenantID:
         type: integer
-        x-go-type: int
+
 
   registerResponse:
     type: object
     properties:
       id:
         type: integer
-        x-go-type: int
+
 
   httpValidationErrorDetail:
     type: object
