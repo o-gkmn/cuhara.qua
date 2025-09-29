@@ -10,8 +10,10 @@ import (
 	"cuhara.qua.go/internal/config"
 	"cuhara.qua.go/internal/data/dto"
 	"cuhara.qua.go/internal/modules/auth"
+	"cuhara.qua.go/internal/modules/claim"
 	"cuhara.qua.go/internal/modules/role"
 	tenant "cuhara.qua.go/internal/modules/tennant"
+	"cuhara.qua.go/internal/modules/topic"
 	"cuhara.qua.go/internal/modules/user"
 	"github.com/labstack/echo/v4"
 	_ "github.com/lib/pq"
@@ -25,6 +27,8 @@ type Router struct {
 	APIV1Users    *echo.Group
 	APIV1Roles    *echo.Group
 	APIV1Tennants *echo.Group
+	APIV1Topics   *echo.Group
+	APIV1Claims   *echo.Group
 }
 
 type Server struct {
@@ -36,6 +40,8 @@ type Server struct {
 	User    UserService
 	Role    RoleService
 	Tennant TennantService
+	Topic   TopicService
+	Claim   ClaimService
 }
 
 type AuthService interface {
@@ -63,6 +69,25 @@ type TennantService interface {
 	GetAll(context.Context) ([]dto.TenantDTO, error)
 }
 
+type TopicService interface {
+	GetAll(context.Context) ([]dto.TopicDTO, error)
+	Create(context.Context, dto.CreateTopicRequest) (dto.CreateTopicResponse, error)
+	Update(context.Context, dto.UpdateTopicRequest) (dto.UpdateTopicResponse, error)
+	Delete(context.Context, dto.DeleteTopicRequest) (dto.DeleteTopicResponse, error)
+	GetSubTopics(context.Context, dto.GetSubTopicsRequest) (dto.SubTopicDTO, error)
+	CreateSubTopic(context.Context, dto.CreateSubTopicRequest) (dto.CreateSubTopicResponse, error)
+	UpdateSubTopic(context.Context, dto.UpdateSubTopicRequest) (dto.UpdateSubTopicResponse, error)
+	DeleteSubTopic(context.Context, dto.DeleteSubTopicRequest) (dto.DeleteSubTopicResponse, error)
+}
+
+type ClaimService interface {
+	GetAll(context.Context) ([]dto.ClaimDTO, error)
+	Create(context.Context, dto.CreateClaimRequest) (dto.CreateClaimResponse, error)
+	Update(context.Context, dto.UpdateClaimRequest) (dto.UpdateClaimResponse, error)
+	Delete(context.Context, dto.DeleteClaimRequest) (dto.DeleteClaimResponse, error)
+}
+
+
 func NewServer(config config.Server) *Server {
 	s := &Server{
 		Config:  config,
@@ -73,6 +98,8 @@ func NewServer(config config.Server) *Server {
 		User:    nil,
 		Role:    nil,
 		Tennant: nil,
+		Topic:   nil,
+		Claim:   nil,
 	}
 
 	return s
@@ -85,7 +112,9 @@ func (s *Server) Ready() bool {
 		s.Auth != nil &&
 		s.User != nil &&
 		s.Role != nil &&
-		s.Tennant != nil
+		s.Tennant != nil &&
+		s.Topic != nil &&
+		s.Claim != nil
 }
 
 func (s *Server) InitCmd() *Server {
@@ -113,6 +142,14 @@ func (s *Server) InitCmd() *Server {
 		log.Fatal().Err(err).Msg("Failed to initialize tennant service")
 	}
 
+	if err := s.InitTopicService(); err != nil {
+		log.Fatal().Err(err).Msg("Failed to initialize topic service")
+	}
+
+	if err := s.InitClaimService(); err != nil {
+		log.Fatal().Err(err).Msg("Failed to initialize claim service")
+	}
+
 	return s
 }
 
@@ -136,6 +173,18 @@ func (s *Server) InitRoleService() error {
 
 func (s *Server) InitTennantService() error {
 	s.Tennant = tenant.NewService(s.Config, s.DB)
+
+	return nil
+}
+
+func (s *Server) InitTopicService() error {
+	s.Topic = topic.NewService(s.Config, s.DB)
+
+	return nil
+}
+
+func (s *Server) InitClaimService() error {
+	s.Claim = claim.NewService(s.Config, s.DB)
 
 	return nil
 }

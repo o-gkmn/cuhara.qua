@@ -177,7 +177,234 @@ paths:
           schema:
             $ref: "#/definitions/createRoleResponse"
 
+  /api/v1/roles/{id}:
+    patch:
+      tags:
+        - role
+      summary: Update role
+      description: Update a role
+      parameters:
+        - $ref: "#/parameters/IDPathParam"
+        - name: updateRole
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/updateRoleRequest"
+      responses:
+        200:
+          description: Role updated successfully
+          schema:
+            $ref: "#/definitions/updateRoleResponse"
+
+    delete:
+      tags:
+        - role
+      summary: Delete role
+      description: Delete a role
+      parameters:
+        - $ref: "#/parameters/IDPathParam"
+      responses:
+        200:
+          description: Role deleted successfully
+          schema:
+            $ref: "#/definitions/deleteRoleResponse"
+  
+  /api/v1/topics:
+    get:
+      tags:
+        - topic
+      summary: Get topics
+      description: Get all topics
+      responses:
+        200:
+          description: Topics fetched successfully
+          schema:
+            $ref: "#/definitions/topicResponse"
+            
+    post:
+      tags:
+        - topic
+      summary: Create topic
+      description: Create a new topic
+      parameters:
+        - name: createTopic
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/createTopicRequest"
+      responses:
+        200:
+          description: Topic created successfully
+          schema:
+            $ref: "#/definitions/createTopicResponse"
+  
+  /api/v1/topics/{id}:
+    patch:
+      tags:
+        - topic
+      summary: Update topic
+      description: Update a topic
+      parameters:
+        - $ref: "#/parameters/IDPathParam"
+        - name: updateTopic
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/updateTopicRequest"
+      responses:
+        200:
+          description: Topic updated successfully
+          schema:
+            $ref: "#/definitions/updateTopicResponse"
+  
+    delete:
+      tags:
+        - topic
+      summary: Delete topic
+      description: Delete a topic
+      parameters:
+        - $ref: "#/parameters/IDPathParam"
+      responses:
+        200:
+          description: Topic deleted successfully
+          schema:
+            $ref: "#/definitions/deleteTopicResponse"
+  
+  /api/v1/topics/{id}/sub-topics:
+    get:
+      tags:
+        - topic
+      summary: Get sub topics
+      description: Get all sub topics
+      parameters:
+        - $ref: "#/parameters/IDPathParam"
+      responses:
+        200:
+          description: Sub topics fetched successfully
+          schema:
+            $ref: "#/definitions/subTopicResponse"
+  
+    post:
+      tags:
+        - topic
+      summary: Create sub topic
+      description: Create a new sub topic
+      parameters:
+        - $ref: "#/parameters/IDPathParam"
+        - name: createSubTopic
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/createSubTopicRequest"
+      responses:
+        200:
+          description: Sub topic created successfully
+          schema:
+            $ref: "#/definitions/createSubTopicResponse"
+  
+  /api/v1/topics/{id}/sub-topics/{subId}:
+    patch:
+      tags:
+        - topic
+      summary: Update sub topic
+      description: Update a sub topic
+      parameters:
+        - $ref: "#/parameters/IDPathParam"
+        - $ref: "#/parameters/SubIDPathParam"
+        - name: updateSubTopic
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/updateSubTopicRequest"
+      responses:
+        200:
+          description: Sub topic updated successfully
+          schema:
+            $ref: "#/definitions/updateSubTopicResponse"
+  
+    delete:
+      tags:
+        - topic
+      summary: Delete sub topic
+      description: Delete a sub topic
+      parameters:
+        - $ref: "#/parameters/IDPathParam"
+        - $ref: "#/parameters/SubIDPathParam"
+      responses:
+        200:
+          description: Sub topic deleted successfully
+          schema:
+            $ref: "#/definitions/deleteSubTopicResponse"
+
+  /api/v1/claims:
+    get:
+      tags:
+        - claim
+      summary: Get claims
+      description: Get all claims
+      responses:
+        200:
+          description: Claims fetched successfully
+          schema:
+            $ref: "#/definitions/claimResponse"
+            
+    post:
+      tags:
+        - claim
+      summary: Create claim
+      description: Create a new claim
+      parameters:
+        - name: createClaim
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/createClaimRequest"
+      responses:
+        200:
+          description: Claim created successfully
+          schema:
+            $ref: "#/definitions/createClaimResponse"
+  
+  /api/v1/claims/{id}:
+    patch:
+      tags:
+        - claim
+      summary: Update claim
+      description: Update a claim
+      parameters:
+        - $ref: "#/parameters/IDPathParam"
+        - name: updateClaim
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/updateClaimRequest"
+      responses:
+        200:
+          description: Claim updated successfully
+          schema:
+            $ref: "#/definitions/updateClaimResponse"
+  
+    delete:
+      tags:
+        - claim
+      summary: Delete claim
+      description: Delete a claim
+      parameters:
+        - $ref: "#/parameters/IDPathParam"
+      responses:
+        200:
+          description: Claim deleted successfully
+          schema:
+            $ref: "#/definitions/deleteClaimResponse"
+
 parameters:
+  SubIDPathParam:
+    name: subId
+    in: path
+    description: Sub topic ID
+    required: true
+    type: integer
+
   IDPathParam:
     name: id
     in: path
@@ -186,6 +413,169 @@ parameters:
     type: integer
 
 definitions:
+  deleteClaimResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+
+  updateClaimResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+
+  updateClaimRequest:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+
+  createClaimResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+
+  createClaimRequest:
+    type: object
+    required:
+      - name
+      - description
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+
+  claimResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      description:
+        type: string
+
+  deleteSubTopicResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+
+  updateSubTopicResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+
+  updateSubTopicRequest:
+    type: object
+    properties:
+      name:
+        type: string
+      topic:
+        type: object
+        properties:
+          id:
+            type: integer
+
+  createSubTopicResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+
+  createSubTopicRequest:
+    type: object
+    required:
+      - name
+      - topic
+    properties:
+      name:
+        type: string
+      topic:
+        type: object
+        required:
+          - id
+        properties:
+          id:
+            type: integer
+  
+  subTopicResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      topic:
+        type: object
+        $ref: "#/definitions/topicResponse"
+        
+  deleteTopicResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+
+  updateTopicResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+
+  updateTopicRequest:
+    type: object
+    properties:
+      name:
+        type: string
+
+  createTopicResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+
+  createTopicRequest:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
+
+  topicResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+
+  deleteRoleResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+        x-go-type: int
+
+  updateRoleResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+        x-go-type: int
+
+  updateRoleRequest:
+    type: object
+    properties:
+      name:
+        type: string
+
   createRoleResponse:
     type: object
     properties:

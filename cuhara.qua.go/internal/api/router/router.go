@@ -73,6 +73,8 @@ func Init(s *api.Server) error {
 		APIV1Users:    s.Echo.Group("/api/v1/users"),
 		APIV1Roles:    s.Echo.Group("/api/v1/roles"),
 		APIV1Tennants: s.Echo.Group("/api/v1/tenants"),
+		APIV1Topics:   s.Echo.Group("/api/v1/topics"),
+		APIV1Claims:   s.Echo.Group("/api/v1/claims"),
 	}
 
 	handlers.AttachAllRoutes(s)
