@@ -25,7 +25,7 @@ func loginHandler(s *api.Server) echo.HandlerFunc {
 		}
 
 		res, err := s.Auth.Login(ctx, dto.LoginRequest{
-			Email:    body.Email,
+			Email:    string(body.Email),
 			Password: body.Password,
 		})
 		if err != nil {

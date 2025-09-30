@@ -22,7 +22,7 @@ type HTTPError struct {
 
 type HTTPValidationError struct {
 	types.PublicHttpValidationError
-	Internal       error
+	Internal       error                  `json:"-"`
 	AdditionalData map[string]interface{} `json:"-"`
 }
 

@@ -21,6 +21,7 @@ type EchoServer struct {
 	EnableSecureMiddleware         bool
 	EnableCacheControlMiddleware   bool
 	EnableJWTMiddleware            bool
+	EnableValidationMiddleware     bool
 	SecureMiddleware               EchoServerSecureMiddleware
 }
 
@@ -94,6 +95,7 @@ func DefaultServiceConfigFromEnv() Server {
 			EnableTrailingSlashMiddleware:  util.GetEnvAsBool("SERVER_ECHO_ENABLE_TRAILING_SLASH_MIDDLEWARE", true),
 			EnableCacheControlMiddleware:   util.GetEnvAsBool("SERVER_ECHO_ENABLE_CACHE_CONTROL_MIDDLEWARE", true),
 			EnableSecureMiddleware:         util.GetEnvAsBool("SERVER_ECHO_ENABLE_SECURE_MIDDLEWARE", true),
+			EnableValidationMiddleware:     util.GetEnvAsBool("SERVER_ECHO_ENABLE_VALIDATION_MIDDLEWARE", true),
 			EnableJWTMiddleware:            util.GetEnvAsBool("SERVER_ECHO_ENABLE_JWT_MIDDLEWARE", true),
 			SecureMiddleware: EchoServerSecureMiddleware{
 				XSSProtection:         util.GetEnv("SERVER_ECHO_SECURE_MIDDLEWARE_XSS_PROTECTION", "1; mode=block"),

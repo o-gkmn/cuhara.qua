@@ -555,8 +555,12 @@ components:
       properties:
         name:
           type: string
+          x-error-messages:
+            required: "İsim zorunludur"
         description:
           type: string
+          x-error-messages:
+            required: "Açıklama zorunludur"
     claimResponse:
       type: object
       properties:
@@ -604,7 +608,11 @@ components:
       properties:
         name:
           type: string
+          x-error-messages:
+            required: "İsim zorunludur"
         topic:
+          x-error-messages:
+            required: "Topic ID zorunludur"
           required:
             - id
           type: object
@@ -652,6 +660,8 @@ components:
       properties:
         name:
           type: string
+          x-error-messages:
+            required: "İsim zorunludur"
     topicResponse:
       type: object
       properties:
@@ -691,6 +701,8 @@ components:
       properties:
         name:
           type: string
+          x-error-messages:
+            required: "İsim zorunludur"
         tenant:
           required:
             - id
@@ -699,6 +711,8 @@ components:
             id:
               type: integer
               format: int64
+              x-error-messages:
+                required: "Tenant ID zorunludur"
     roleResponse:
       type: object
       properties:
@@ -733,6 +747,8 @@ components:
       properties:
         name:
           type: string
+          x-error-messages:
+            required: "İsim zorunludur"
     createTenantResponse:
       type: object
       properties:
@@ -768,6 +784,9 @@ components:
           type: string
         email:
           type: string
+          format: email
+          x-error-messages:
+            format: "Email formatı geçersiz"
         vscAccount:
           type: string
         role:
@@ -804,8 +823,14 @@ components:
       properties:
         email:
           type: string
+          format: email
+          x-error-messages:
+            required: "Email zorunludur"
+            format: "Email formatı geçersiz"
         password:
           type: string
+          x-error-messages:
+            required: "Şifre zorunludur"
     loginResponse:
       type: object
       properties:

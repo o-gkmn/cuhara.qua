@@ -1,5 +1,9 @@
 package util
 
+import (
+	openapi_types "github.com/oapi-codegen/runtime/types"
+)
+
 func PtrToString(str *string) string {
 	if str == nil {
 		return ""
@@ -55,3 +59,12 @@ func IntToPtr(num int) *int {
 
 	return &num
 }
+
+func EmailPtrToStringPtr(email *openapi_types.Email) *string {
+	if email == nil {
+		return nil
+	}
+	s := string(*email)
+	return &s
+}
+

@@ -1,7 +1,7 @@
 swagger-models:
-	swagger generate model \
-  	--spec=docs/swagger.yml \
-  	--model-package=internal/types
+	oapi-codegen -config api/config/oapi-codegen.types.yml \
+  	-o internal/types/openapi_types.gen.go \
+  	api/swagger.yml
 
 migrate-up:
 	sql-migrate up

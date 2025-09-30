@@ -26,7 +26,7 @@ func updateUserHandler(s *api.Server) echo.HandlerFunc {
 		res, err := s.User.Update(ctx, dto.UpdateUserRequest{
 			ID:         body.Id,
 			Name:       body.Name,
-			Email:      body.Email,
+			Email:      util.EmailPtrToStringPtr(body.Email),
 			VscAccount: body.VscAccount,
 			RoleID:     util.SafeChainInt64(func() *int64 { return &body.Role.Id }),
 		})

@@ -66,6 +66,12 @@ func Init(s *api.Server) error {
 		log.Warn().Msg("Disabling cors middleware due to environment config")
 	}
 
+	if s.Config.Echo.EnableValidationMiddleware {
+		s.Echo.Use(middleware.OpenAPIValidationMiddleware())
+	} else {
+		log.Warn().Msg("Disabling validation middleware due to environment config")
+	}
+
 	s.Router = &api.Router{
 		Routes:        nil,
 		Root:          s.Echo.Group(""),
