@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"context"
-	"net/http"
 	"strings"
 
 	"cuhara.qua.go/internal/api"
@@ -15,15 +14,7 @@ import (
 )
 
 var (
-	ErrUnauthorized         = httperrors.NewHTTPError(http.StatusUnauthorized, "unauthorized", "unauthorized")
-	ErrForbidden            = httperrors.NewHTTPError(http.StatusForbidden, "forbidden", "forbidden")
-	ErrNotFound             = httperrors.NewHTTPError(http.StatusNotFound, "not_found", "not_found")
-	ErrInvalidToken         = httperrors.NewHTTPError(http.StatusUnauthorized, "invalid_token", "invalid_token")
-	ErrInvalidSubjcet       = httperrors.NewHTTPError(http.StatusUnauthorized, "invalid_subject", "invalid_subject")
-	ErrInvalidIssuer        = httperrors.NewHTTPError(http.StatusUnauthorized, "invalid_issuer", "invalid_issuer")
-	ErrMissingHeader        = httperrors.NewHTTPError(http.StatusUnauthorized, "missing_header", "missing_header")
-	ErrInvalidHeader        = httperrors.NewHTTPError(http.StatusUnauthorized, "invalid_header", "invalid_header")
-	ErrInvalidSigningMethod = httperrors.NewHTTPError(http.StatusUnauthorized, "invalid_signing_method", "invalid_signing_method")
+
 )
 
 const AuthModeKey = "auth_mode"
@@ -62,13 +53,13 @@ func JWTAuthWithConfig(cfg JWTConfig) echo.MiddlewareFunc {
 
 			claims, err := validateJWT(tokenStr, cfg.S.Config.Auth)
 			if err != nil {
-				return ErrInvalidToken
+				return httperrors.ErrInvalidToken
 			}
 			if claims.Subject == "" {
-				return ErrInvalidSubjcet
+				return httperrors.ErrInvalidSubjcet
 			}
 			if claims.Issuer != cfg.S.Config.Auth.JWTIssuer {
-				return ErrInvalidIssuer
+				return httperrors.ErrInvalidIssuer
 			}
 
 			ctx := c.Request().Context()
@@ -92,15 +83,15 @@ const authScheme = "Bearer"
 func bearerTokenFromHeader(authz string) (string, error) {
 	authz = strings.TrimSpace(authz)
 	if authz == "" {
-		return "", ErrMissingHeader
+		return "", httperrors.ErrMissingHeader
 	}
 	parts := strings.SplitN(authz, " ", 2)
 	if len(parts) != 2 || !strings.EqualFold(parts[0], authScheme) {
-		return "", ErrInvalidHeader
+		return "", httperrors.ErrInvalidHeader
 	}
 	token := strings.TrimSpace(parts[1])
 	if token == "" {
-		return "", ErrInvalidHeader
+		return "", httperrors.ErrInvalidHeader
 	}
 	return token, nil
 }
@@ -112,7 +103,7 @@ func validateJWT(tokenStr string, cfg config.AuthServer) (*jwt.RegisteredClaims,
 		claims,
 		func(t *jwt.Token) (any, error) {
 			if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, ErrInvalidSigningMethod
+				return nil, httperrors.ErrInvalidSigningMethod
 			}
 			return []byte(cfg.JWTSecret), nil
 		},
@@ -123,7 +114,7 @@ func validateJWT(tokenStr string, cfg config.AuthServer) (*jwt.RegisteredClaims,
 		return nil, err
 	}
 	if !token.Valid {
-		return nil, ErrInvalidToken
+		return nil, httperrors.ErrInvalidToken
 	}
 	return claims, nil
 }
