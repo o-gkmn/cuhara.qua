@@ -3,6 +3,7 @@ package util
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strconv"
 	"time"
 )
@@ -63,15 +64,34 @@ func DisableLogger(ctx context.Context, shouldDisable bool) context.Context {
 	return context.WithValue(ctx, CTXKeyDisableLogger, shouldDisable)
 }
 
-func TenantIDFromContext(ctx context.Context) (int64, error) {
-	val := ctx.Value(CTXKeyTenant)
-	if val == nil {
-		return 0, errors.New("no tenant id present in context")
+func SaveContextValue(ctx context.Context, key contextKey, value any) context.Context {
+	if value == nil {
+		return ctx
 	}
 
-	tenantID, err := strconv.ParseInt(val.(string), 10, 64)
+	valStr := fmt.Sprintf("%v", value)
+	return context.WithValue(ctx, key, valStr)
+}
+
+func GetContextValue(ctx context.Context, key contextKey) (string, error) {
+	val := ctx.Value(key)
+	if val == nil {
+		return "", errors.New("no value present in context")
+	}
+
+	valStr := fmt.Sprintf("%v", val)
+	return valStr, nil
+}
+
+func TenantIDFromContext(ctx context.Context) (int64, error) {
+	valStr, err := GetContextValue(ctx, CTXKeyTenant)
 	if err != nil {
-		return 0, errors.New("tenant id in context is not a string")
+		return 0, err
+	}
+
+	tenantID, err := strconv.ParseInt(valStr, 10, 64)
+	if err != nil {
+		return 0, errors.New("tenant id in context is not a valid number")
 	}
 
 	return tenantID, nil

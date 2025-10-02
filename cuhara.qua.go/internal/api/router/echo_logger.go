@@ -8,6 +8,6 @@ type echoLogger struct {
 }
 
 func (l *echoLogger) Write(p []byte) (n int, err error) {
-	l.log.WithLevel(l.level).Msgf("%s",p)
+	l.log.WithLevel(l.level).Msgf("%s", p)
 	return len(p), nil
 }

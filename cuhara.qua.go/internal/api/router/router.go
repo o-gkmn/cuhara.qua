@@ -85,14 +85,14 @@ func Init(s *api.Server) error {
 	}
 
 	s.Router = &api.Router{
-		Routes:        nil,
-		Root:          s.Echo.Group(""),
-		APIV1Auth:     s.Echo.Group("/api/v1/auth"),
-		APIV1Users:    s.Echo.Group("/api/v1/users"),
-		APIV1Roles:    s.Echo.Group("/api/v1/roles"),
-		APIV1Tennants: s.Echo.Group("/api/v1/tenants"),
-		APIV1Topics:   s.Echo.Group("/api/v1/topics"),
-		APIV1Claims:   s.Echo.Group("/api/v1/claims"),
+		Routes:         nil,
+		Root:           s.Echo.Group(""),
+		APIV1Auth:      s.Echo.Group("/api/v1/auth"),
+		APIV1Users:     s.Echo.Group("/api/v1/users"),
+		APIV1Roles:     s.Echo.Group("/api/v1/roles"),
+		APIV1Tennants:  s.Echo.Group("/api/v1/tenants"),
+		APIV1Topics:    s.Echo.Group("/api/v1/topics"),
+		APIV1Claims:    s.Echo.Group("/api/v1/claims"),
 		APIV1SubTopics: s.Echo.Group("/api/v1/topics/:id/sub-topics"),
 	}
 

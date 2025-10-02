@@ -49,7 +49,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/registerResponse"
-      security: []
+      security: 
+        - TenantAuth: []
+        - BearerAuth: []
       x-codegen-request-body-name: register
   /api/v1/users:
     get:

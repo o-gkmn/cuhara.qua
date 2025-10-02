@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	skipTenantAuthPaths = []string{"/api/v1/auth/login", "/api/v1/auth/register", "/", "/swagger", "/docs"}
+	skipTenantAuthPaths = []string{"/api/v1/auth/login", "/", "/swagger", "/docs"}
 )
 
 const (
@@ -76,21 +76,20 @@ func skipTenantAuth(c echo.Context) bool {
 	return false
 }
 
-
 func extractTenantID(c echo.Context, log zerolog.Logger) (int64, error) {
 	// get tenant id string from header
 	tenantIDStr := c.Request().Header.Get(TenantHeader)
 
 	// if tenant id is empty return an error
 	if tenantIDStr == "" {
-		log.Debug().Msg("missing tenant header")
+		log.Info().Msg("missing tenant header")
 		return 0, httperrors.ErrMissingHeader
 	}
 
 	// convert tenant id to int64
 	tenantID, err := strconv.ParseInt(tenantIDStr, Base10, Int64Bits)
 	if err != nil {
-		log.Debug().
+		log.Info().
 			Str("tenant_id", tenantIDStr).
 			Msg("invalid tenant ID format")
 		return 0, httperrors.ErrInvalidHeader
@@ -98,13 +97,13 @@ func extractTenantID(c echo.Context, log zerolog.Logger) (int64, error) {
 
 	// check if tenantID overflow max int64 value
 	if tenantID > MaxTenantID {
-		log.Debug().Int64("tenant_id", tenantID).Msg("tenant ID exceeds maximum value")
+		log.Info().Int64("tenant_id", tenantID).Msg("tenant ID exceeds maximum value")
 		return 0, httperrors.ErrInvalidHeader
 	}
 
 	// if tenant id lower than zero return an error
 	if tenantID <= 0 {
-		log.Debug().Msg("tenant id equals or lower than zero")
+		log.Info().Msg("tenant id equals or lower than zero")
 		return 0, httperrors.ErrInvalidHeader
 	}
 
@@ -116,14 +115,14 @@ func extractUserID(ctx context.Context, log zerolog.Logger) (int64, error) {
 	// by the JWT middleware that runs before this tenant validation middleware.
 	userIDStr, ok := ctx.Value(util.CTXKeyUser).(string)
 	if !ok {
-		log.Debug().Msg("missing user context")
+		log.Info().Msg("missing user context")
 		return 0, httperrors.ErrUnauthorized
 	}
 
 	// convert user id to int64
 	userID, err := strconv.ParseInt(userIDStr, Base10, Int64Bits)
 	if err != nil {
-		log.Debug().
+		log.Info().
 			Str("user_id", userIDStr).
 			Msg("invalid user ID format")
 		return 0, httperrors.ErrUnauthorized
@@ -131,13 +130,13 @@ func extractUserID(ctx context.Context, log zerolog.Logger) (int64, error) {
 
 	// check if userID overflow max int64 value
 	if userID > MaxUserID {
-		log.Debug().Int64("user_id", userID).Msg("user ID exceeds maximum value")
+		log.Info().Int64("user_id", userID).Msg("user ID exceeds maximum value")
 		return 0, httperrors.ErrInvalidHeader
 	}
 
 	// if user id lower than zero return an error
 	if userID <= 0 {
-		log.Debug().Msg("user id equals or lower than zero")
+		log.Info().Msg("user id equals or lower than zero")
 		return 0, httperrors.ErrUnauthorized
 	}
 
@@ -161,7 +160,7 @@ func validateUserTenantRelationship(c echo.Context, db *sql.DB, userID, tenantID
 	}
 
 	if !exists {
-		log.Debug().
+		log.Info().
 			Int64("user_id", userID).
 			Int64("tenant_id", tenantID).
 			Msg("user not found with given userID and tenantID")

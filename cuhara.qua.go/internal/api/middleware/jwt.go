@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"context"
 	"strings"
 
 	"cuhara.qua.go/internal/api"
@@ -10,10 +9,11 @@ import (
 	"cuhara.qua.go/internal/util"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
+	"github.com/rs/zerolog"
 )
 
 var (
-	skipJWTAuthPaths = []string{"/api/v1/auth/login", "/api/v1/auth/register", "/", "/swagger", "/docs"}
+	skipJWTAuthPaths = []string{"/api/v1/auth/login", "/", "/swagger", "/docs"}
 )
 
 const AuthModeKey = "auth_mode"
@@ -41,29 +41,36 @@ const authHeader = "Authorization"
 func JWTAuthWithConfig(cfg JWTConfig) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
+			log := util.LogFromEchoContext(c).With().Str("middleware", "jwt").Logger()
+
 			if cfg.Skipper != nil && cfg.Skipper(c) {
 				return next(c)
 			}
 
 			tokenStr, err := bearerTokenFromHeader(c.Request().Header.Get(authHeader))
 			if err != nil {
+				log.Info().Err(err).Str("token", tokenStr).Msg("invalid bearer token")
 				return err
 			}
 
-			claims, err := validateJWT(tokenStr, cfg.S.Config.Auth)
+			claims, err := util.Verify(tokenStr)
+			log.Info().Any("claims", claims).Msg("claims")
 			if err != nil {
+				log.Info().Err(err).Any("claims", claims).Msg("invalid jwt token")
 				return httperrors.ErrInvalidToken
 			}
-			if claims.Subject == "" {
+			if claims["sub"] == nil {
+				log.Info().Any("claims", claims).Msg("invalid subject")
 				return httperrors.ErrInvalidSubjcet
 			}
-			if claims.Issuer != cfg.S.Config.Auth.JWTIssuer {
+			if claims["iss"] != cfg.S.Config.Auth.JWTIssuer {
+				log.Info().Any("claims", claims).Msg("invalid issuer")
 				return httperrors.ErrInvalidIssuer
 			}
 
 			ctx := c.Request().Context()
-			ctx = context.WithValue(ctx, util.CTXKeyUser, claims.Subject)
-			ctx = context.WithValue(ctx, util.CTXKeyAuthToken, tokenStr)
+			ctx = util.SaveContextValue(ctx, util.CTXKeyUser, claims["sub"])
+			ctx = util.SaveContextValue(ctx, util.CTXKeyAuthToken, tokenStr)
 			c.SetRequest(c.Request().WithContext(ctx))
 
 			return next(c)
@@ -95,13 +102,15 @@ func bearerTokenFromHeader(authz string) (string, error) {
 	return token, nil
 }
 
-func validateJWT(tokenStr string, cfg config.AuthServer) (*jwt.RegisteredClaims, error) {
+func validateJWT(tokenStr string, cfg config.AuthServer, log zerolog.Logger) (*jwt.RegisteredClaims, error) {
+	log.Info().Str("token", tokenStr).Msg("validating jwt token")
 	claims := &jwt.RegisteredClaims{}
 	token, err := jwt.ParseWithClaims(
 		tokenStr,
 		claims,
 		func(t *jwt.Token) (any, error) {
 			if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+				log.Info().Msg("invalid signing method")
 				return nil, httperrors.ErrInvalidSigningMethod
 			}
 			return []byte(cfg.JWTSecret), nil
@@ -110,9 +119,11 @@ func validateJWT(tokenStr string, cfg config.AuthServer) (*jwt.RegisteredClaims,
 		jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Alg()}),
 	)
 	if err != nil {
+		log.Info().Err(err).Msg("error occured while parsing jwt token")
 		return nil, err
 	}
 	if !token.Valid {
+		log.Info().Msg("jwt token validation failed")
 		return nil, httperrors.ErrInvalidToken
 	}
 	return claims, nil
