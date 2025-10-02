@@ -29,7 +29,15 @@ func NewService(config config.Server, db *sql.DB) *Service {
 func (s *Service) GetAll(ctx context.Context) ([]dto.ClaimDTO, error) {
 	log := util.LogFromContext(ctx).With().Str("function", "GetAll").Logger()
 
-	claims, err := models.Claims().All(ctx, s.db)
+	tenantID, err := util.TenantIDFromContext(ctx)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to get tenant id from context")
+		return nil, err
+	}
+
+	claims, err := models.Claims(
+		models.ClaimWhere.TenantID.EQ(tenantID),
+	).All(ctx, s.db)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to get claims")
 		return nil, err
@@ -50,12 +58,33 @@ func (s *Service) GetAll(ctx context.Context) ([]dto.ClaimDTO, error) {
 func (s *Service) Create(ctx context.Context, request dto.CreateClaimRequest) (dto.CreateClaimResponse, error) {
 	log := util.LogFromContext(ctx).With().Str("function", "Create").Logger()
 
+	tenantID, err := util.TenantIDFromContext(ctx)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to get tenant id from context")
+		return dto.CreateClaimResponse{}, err
+	}
+
+	exists, err := models.Claims(
+		models.ClaimWhere.Name.EQ(request.Name),
+		models.ClaimWhere.TenantID.EQ(tenantID),
+	).Exists(ctx, s.db)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to check whether claim exists")
+		return dto.CreateClaimResponse{}, err
+	}
+
+	if exists {
+		log.Debug().Str("name", request.Name).Msg("Claim already exists")
+		return dto.CreateClaimResponse{}, httperrors.ErrConflictClaimAlreadyExists
+	}
+
 	claim := models.Claim{
 		Name:        request.Name,
 		Description: null.StringFrom(*request.Description),
+		TenantID:    tenantID,
 	}
 	
-	err := claim.Insert(ctx, s.db, boil.Infer())
+	err = claim.Insert(ctx, s.db, boil.Infer())
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to create claim")
 		return dto.CreateClaimResponse{}, err
@@ -67,7 +96,16 @@ func (s *Service) Create(ctx context.Context, request dto.CreateClaimRequest) (d
 func (s *Service) Update(ctx context.Context, request dto.UpdateClaimRequest) (dto.UpdateClaimResponse, error) {
 	log := util.LogFromContext(ctx).With().Str("function", "Update").Logger()
 
-	claim, err := models.FindClaim(ctx, s.db, request.ID)
+	tenantID, err := util.TenantIDFromContext(ctx)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to get tenant id from context")
+		return dto.UpdateClaimResponse{}, err
+	}
+
+	claim, err := models.Claims(
+		models.ClaimWhere.ID.EQ(request.ID),
+		models.ClaimWhere.TenantID.EQ(tenantID),
+	).One(ctx, s.db)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			log.Error().Err(err).Msg("Claim not found")
@@ -77,9 +115,24 @@ func (s *Service) Update(ctx context.Context, request dto.UpdateClaimRequest) (d
 		log.Error().Err(err).Msg("Failed to find claim")
 		return dto.UpdateClaimResponse{}, err
 	}
-
+	
 	changed := false
 	if request.Name != nil && claim.Name != *request.Name {
+		exists, err := models.Claims(
+			models.ClaimWhere.Name.EQ(*request.Name),
+			models.ClaimWhere.TenantID.EQ(tenantID),
+			models.ClaimWhere.ID.NEQ(request.ID),
+		).Exists(ctx, s.db)
+		if err != nil {
+			log.Error().Err(err).Msg("Failed to check whether claim exists")
+			return dto.UpdateClaimResponse{}, err
+		}
+
+		if exists {
+			log.Debug().Str("name", *request.Name).Msg("Claim already exists")
+			return dto.UpdateClaimResponse{}, httperrors.ErrConflictClaimAlreadyExists
+		}
+
 		claim.Name = *request.Name
 		changed = true
 	}
@@ -105,7 +158,16 @@ func (s *Service) Update(ctx context.Context, request dto.UpdateClaimRequest) (d
 func (s *Service) Delete(ctx context.Context, request dto.DeleteClaimRequest) (dto.DeleteClaimResponse, error) {
 	log := util.LogFromContext(ctx).With().Str("function", "Delete").Logger()
 
-	claim, err := models.FindClaim(ctx, s.db, request.ID)
+	tenantID, err := util.TenantIDFromContext(ctx)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to get tenant id from context")
+		return dto.DeleteClaimResponse{}, err
+	}
+
+	claim, err := models.Claims(
+		models.ClaimWhere.ID.EQ(request.ID),
+		models.ClaimWhere.TenantID.EQ(tenantID),
+	).One(ctx, s.db)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			log.Error().Err(err).Msg("Claim not found")

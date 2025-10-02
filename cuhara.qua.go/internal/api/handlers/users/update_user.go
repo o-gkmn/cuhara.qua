@@ -11,12 +11,18 @@ import (
 )
 
 func UpdateUserRoute(s *api.Server) *echo.Route {
-	return s.Router.APIV1Users.PUT("", updateUserHandler(s))
+	return s.Router.APIV1Users.PATCH("/:id", updateUserHandler(s))
 }
 
 func updateUserHandler(s *api.Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
+
+		var id int64
+		err := util.BindValidatePathParams(c, &id)
+		if err != nil {
+			return err
+		}
 
 		var body types.UpdateUserRequest
 		if err := util.BindAndValidateBody(c, &body); err != nil {
@@ -24,7 +30,7 @@ func updateUserHandler(s *api.Server) echo.HandlerFunc {
 		}
 
 		res, err := s.User.Update(ctx, dto.UpdateUserRequest{
-			ID:         body.Id,
+			ID:         id,
 			Name:       body.Name,
 			Email:      util.EmailPtrToStringPtr(body.Email),
 			VscAccount: body.VscAccount,

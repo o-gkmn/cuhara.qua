@@ -3,12 +3,10 @@ package dto
 type RoleDTO struct {
 	ID     int64
 	Name   string
-	Tenant *TenantDTO
 }
 
 type CreateRoleRequest struct {
 	Name     string
-	TenantID int64
 }
 
 type CreateRoleResponse struct {

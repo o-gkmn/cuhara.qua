@@ -29,6 +29,7 @@ type Router struct {
 	APIV1Tennants *echo.Group
 	APIV1Topics   *echo.Group
 	APIV1Claims   *echo.Group
+	APIV1SubTopics *echo.Group
 }
 
 type Server struct {
@@ -74,7 +75,7 @@ type TopicService interface {
 	Create(context.Context, dto.CreateTopicRequest) (dto.CreateTopicResponse, error)
 	Update(context.Context, dto.UpdateTopicRequest) (dto.UpdateTopicResponse, error)
 	Delete(context.Context, dto.DeleteTopicRequest) (dto.DeleteTopicResponse, error)
-	GetSubTopics(context.Context, dto.GetSubTopicsRequest) (dto.SubTopicDTO, error)
+	GetSubTopics(context.Context, dto.GetSubTopicsRequest) ([]dto.SubTopicDTO, error)
 	CreateSubTopic(context.Context, dto.CreateSubTopicRequest) (dto.CreateSubTopicResponse, error)
 	UpdateSubTopic(context.Context, dto.UpdateSubTopicRequest) (dto.UpdateSubTopicResponse, error)
 	DeleteSubTopic(context.Context, dto.DeleteSubTopicRequest) (dto.DeleteSubTopicResponse, error)

@@ -3,6 +3,7 @@ package util
 import (
 	"context"
 	"errors"
+	"strconv"
 	"time"
 )
 
@@ -60,4 +61,18 @@ func ShouldDisableLogger(ctx context.Context) bool {
 
 func DisableLogger(ctx context.Context, shouldDisable bool) context.Context {
 	return context.WithValue(ctx, CTXKeyDisableLogger, shouldDisable)
+}
+
+func TenantIDFromContext(ctx context.Context) (int64, error) {
+	val := ctx.Value(CTXKeyTenant)
+	if val == nil {
+		return 0, errors.New("no tenant id present in context")
+	}
+
+	tenantID, err := strconv.ParseInt(val.(string), 10, 64)
+	if err != nil {
+		return 0, errors.New("tenant id in context is not a string")
+	}
+
+	return tenantID, nil
 }

@@ -51,6 +51,7 @@ type CreateSubTopicResponse struct {
 
 type UpdateSubTopicRequest struct {
 	ID   int64
+	TopicID int64
 	Name *string
 }
 
@@ -59,7 +60,8 @@ type UpdateSubTopicResponse struct {
 }
 
 type DeleteSubTopicRequest struct {
-	ID int64
+	ID      int64
+	TopicID int64
 }
 
 type DeleteSubTopicResponse struct {

@@ -72,8 +72,15 @@ func (s *Service) Login(ctx context.Context, request dto.LoginRequest) (dto.Logi
 func (s *Service) Register(ctx context.Context, request dto.RegisterRequest) (dto.LoginResponse, error) {
 	log := util.LogFromContext(ctx).With().Str("email", request.Email).Logger()
 
+	tenantID, err := util.TenantIDFromContext(ctx)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to get tenant id from context")
+		return dto.LoginResponse{}, err
+	}
+
 	exists, err := models.Users(
 		models.UserWhere.Email.EQ(request.Email),
+		models.UserWhere.TenantID.EQ(tenantID),
 	).Exists(ctx, s.db)
 	if err != nil {
 		log.Err(err).Msg("Failed to check whether user exists")
@@ -99,7 +106,7 @@ func (s *Service) Register(ctx context.Context, request dto.RegisterRequest) (dt
 			VSCAccount: request.VscAccount,
 			Password:   hash,
 			RoleID:     request.RoleID,
-			TenantID:   request.TenantID,
+			TenantID:   tenantID,
 		}
 
 		if err := user.Insert(ctx, ce, boil.Infer()); err != nil {

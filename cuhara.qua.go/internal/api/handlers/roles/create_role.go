@@ -25,7 +25,6 @@ func createRoleHandler(s *api.Server) echo.HandlerFunc {
 
 		res, err := s.Role.Create(ctx, dto.CreateRoleRequest{
 			Name:     body.Name,
-			TenantID: body.Tenant.Id,
 		})
 		if err != nil {
 			return err

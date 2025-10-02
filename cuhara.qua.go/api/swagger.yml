@@ -64,25 +64,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/userResponse"
-    put:
-      tags:
-        - users
-      summary: Update user
-      description: Update a user
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/updateUserRequest"
-        required: true
-      responses:
-        "200":
-          description: User updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/updateUserResponse"
-      x-codegen-request-body-name: updateUser
   /api/v1/users/{id}:
     delete:
       tags:
@@ -103,6 +84,32 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/deleteUserResponse"
+    patch:
+      tags:
+        - users
+      summary: Update user
+      description: Update a user
+      parameters:
+        - name: id
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/updateUserRequest"
+        required: true
+      responses:
+        "200":
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/updateUserResponse"
+      x-codegen-request-body-name: updateUser
   /api/v1/tenants:
     get:
       security:
@@ -612,23 +619,12 @@ components:
     createSubTopicRequest:
       required:
         - name
-        - topic
       type: object
       properties:
         name:
           type: string
           x-error-messages:
             required: "İsim zorunludur"
-        topic:
-          x-error-messages:
-            required: "Topic ID zorunludur"
-          required:
-            - id
-          type: object
-          properties:
-            id:
-              type: integer
-              format: int64
     subTopicResponse:
       type: object
       properties:
@@ -705,23 +701,12 @@ components:
     createRoleRequest:
       required:
         - name
-        - tenant
       type: object
       properties:
         name:
           type: string
           x-error-messages:
             required: "İsim zorunludur"
-        tenant:
-          required:
-            - id
-          type: object
-          properties:
-            id:
-              type: integer
-              format: int64
-              x-error-messages:
-                required: "Tenant ID zorunludur"
     roleResponse:
       type: object
       properties:
@@ -730,8 +715,6 @@ components:
           format: int64
         name:
           type: string
-        tenant:
-          $ref: "#/components/schemas/tenantResponse"
     deleteTenantResponse:
       type: object
       properties:
@@ -782,13 +765,8 @@ components:
           type: integer
           format: int64
     updateUserRequest:
-      required:
-        - id
       type: object
       properties:
-        id:
-          type: integer
-          format: int64
         name:
           type: string
         email:
@@ -824,6 +802,8 @@ components:
           type: string
         vscAccount:
           type: string
+        role:
+          $ref: "#/components/schemas/roleResponse"
     loginRequest:
       required:
         - email
@@ -850,8 +830,7 @@ components:
         - email
         - name
         - password
-        - roleID
-        - tenantID
+        - role
         - vscAccount
       type: object
       properties:
@@ -863,12 +842,12 @@ components:
           type: string
         vscAccount:
           type: string
-        roleID:
-          type: integer
-          format: int64
-        tenantID:
-          type: integer
-          format: int64
+        role:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
     registerResponse:
       type: object
       properties:

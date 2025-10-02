@@ -6,7 +6,6 @@ func (r RoleDTO) ToTypes() *types.RoleResponse {
 	return &types.RoleResponse{
 		Id:     &r.ID,
 		Name:   &r.Name,
-		Tenant: r.Tenant.ToTypes(),
 	}
 }
 

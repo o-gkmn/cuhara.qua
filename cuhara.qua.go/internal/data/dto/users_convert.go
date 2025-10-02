@@ -8,6 +8,10 @@ func (u UserDTO) ToTypes() *types.UserResponse {
 		Name:       &u.Name,
 		Email:      &u.Email,
 		VscAccount: &u.VscAccount,
+		Role: &types.RoleResponse{
+			Id:   &u.RoleDTO.ID,
+			Name: &u.RoleDTO.Name,
+		},
 	}
 }
 

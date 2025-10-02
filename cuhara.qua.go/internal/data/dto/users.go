@@ -5,6 +5,7 @@ type UserDTO struct {
 	Name       string
 	Email      string
 	VscAccount string
+	RoleDTO    RoleDTO
 }
 
 type LoginRequest struct {
@@ -22,7 +23,6 @@ type RegisterRequest struct {
 	Password   string
 	VscAccount string
 	RoleID     int64
-	TenantID   int64
 }
 
 type RegisterResponse struct {

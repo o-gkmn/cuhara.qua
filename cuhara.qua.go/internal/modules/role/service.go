@@ -30,9 +30,15 @@ func NewService(config config.Server, db *sql.DB) *Service {
 
 func (s *Service) GetRoles(ctx context.Context) ([]dto.RoleDTO, error) {
 	log := util.LogFromContext(ctx).With().Str("function", "GetRoles").Logger()
+	tenantID, err := util.TenantIDFromContext(ctx)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to get tenant id from context")
+		return nil, err
+	}
 
 	roles, err := models.Roles(
 		qm.Load(models.RoleRels.Tenant),
+		models.RoleWhere.TenantID.EQ(tenantID),
 	).All(ctx, s.db)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to get roles")
@@ -44,10 +50,6 @@ func (s *Service) GetRoles(ctx context.Context) ([]dto.RoleDTO, error) {
 		roleDTOs[i] = dto.RoleDTO{
 			ID:   role.ID,
 			Name: role.Name,
-			Tenant: &dto.TenantDTO{
-				ID:   role.R.Tenant.ID,
-				Name: role.R.Tenant.Name,
-			},
 		}
 	}
 
@@ -57,9 +59,15 @@ func (s *Service) GetRoles(ctx context.Context) ([]dto.RoleDTO, error) {
 func (s *Service) Create(ctx context.Context, request dto.CreateRoleRequest) (dto.CreateRoleResponse, error) {
 	log := util.LogFromContext(ctx).With().Str("function", "CreateRole").Logger()
 
+	tenantID, err := util.TenantIDFromContext(ctx)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to get tenant id from context")
+		return dto.CreateRoleResponse{}, err
+	}
+
 	exists, err := models.Roles(
 		models.RoleWhere.Name.EQ(request.Name),
-		models.RoleWhere.TenantID.EQ(request.TenantID),
+		models.RoleWhere.TenantID.EQ(tenantID),
 	).Exists(ctx, s.db)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to check whether role exists")
@@ -73,7 +81,7 @@ func (s *Service) Create(ctx context.Context, request dto.CreateRoleRequest) (dt
 
 	role := models.Role{
 		Name:      request.Name,
-		TenantID:  request.TenantID,
+		TenantID:  tenantID,
 		CreatedAt: time.Now().UTC(),
 	}
 
@@ -89,8 +97,15 @@ func (s *Service) Create(ctx context.Context, request dto.CreateRoleRequest) (dt
 func (s *Service) Update(ctx context.Context, request dto.UpdateRoleRequest) (dto.UpdateRoleResponse, error) {
 	log := util.LogFromContext(ctx).With().Int64("id", request.ID).Logger()
 
+	tenantID, err := util.TenantIDFromContext(ctx)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to get tenant id from context")
+		return dto.UpdateRoleResponse{}, err
+	}
+
 	role, err := models.Roles(
 		models.RoleWhere.ID.EQ(request.ID),
+		models.RoleWhere.TenantID.EQ(tenantID),
 	).One(ctx, s.db)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -145,8 +160,15 @@ func (s *Service) Update(ctx context.Context, request dto.UpdateRoleRequest) (dt
 func (s *Service) Delete(ctx context.Context, request dto.DeleteRoleRequest) (dto.DeleteRoleResponse, error) {
 	log := util.LogFromContext(ctx).With().Int64("id", request.ID).Logger()
 
+	tenantID, err := util.TenantIDFromContext(ctx)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to get tenant id from context")
+		return dto.DeleteRoleResponse{}, err
+	}
+
 	n, err := models.Roles(
 		models.RoleWhere.ID.EQ(request.ID),
+		models.RoleWhere.TenantID.EQ(tenantID),
 	).DeleteAll(ctx, s.db)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to delete role")

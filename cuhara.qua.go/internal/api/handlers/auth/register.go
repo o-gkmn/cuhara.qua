@@ -27,8 +27,7 @@ func registerHandler(s *api.Server) echo.HandlerFunc {
 			Email:      body.Email,
 			Password:   body.Password,
 			VscAccount: body.VscAccount,
-			RoleID:     body.RoleID,
-			TenantID:   body.TenantID,
+			RoleID:     *body.Role.Id,
 		})
 		if err != nil {
 			return err
