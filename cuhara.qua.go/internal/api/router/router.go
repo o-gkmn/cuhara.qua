@@ -72,6 +72,18 @@ func Init(s *api.Server) error {
 		log.Warn().Msg("Disabling validation middleware due to environment config")
 	}
 
+	if s.Config.Echo.EnableJWTMiddleware {
+		s.Echo.Use(middleware.JWTAuth(s))
+	} else {
+		log.Warn().Msg("Disabling jwt auth middleware due to environment config")
+	}
+
+	if s.Config.Echo.EnableTenantAuthMiddleware {
+		s.Echo.Use(middleware.TenantAuth(s))
+	} else {
+		log.Warn().Msg("Disabling tenant auth middleware due to environment config")
+	}
+
 	s.Router = &api.Router{
 		Routes:        nil,
 		Root:          s.Echo.Group(""),

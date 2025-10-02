@@ -13,6 +13,10 @@ import (
 	"github.com/rs/zerolog"
 )
 
+var (
+	skipTenantAuthPaths = []string{"/api/v1/auth/login", "/api/v1/auth/register", "/", "/swagger", "/docs"}
+)
+
 const (
 	TenantHeader = "X-TENANT-ID"
 	MaxTenantID  = 9223372036854775807
@@ -21,11 +25,16 @@ const (
 	Int64Bits    = 64
 )
 
-func ValidateTenant(s *api.Server) echo.MiddlewareFunc {
+func TenantAuth(s *api.Server) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			log := util.LogFromEchoContext(c).With().Str("middleware", "tenant").Logger()
 			ctx := c.Request().Context()
+
+			// skip tenant auth if the request is in the skipTenantAuthPaths
+			if skipTenantAuth(c) {
+				return next(c)
+			}
 
 			// Extract tenant id from headers
 			tenantID, err := extractTenantID(c, log)
@@ -57,6 +66,16 @@ func ValidateTenant(s *api.Server) echo.MiddlewareFunc {
 		}
 	}
 }
+
+func skipTenantAuth(c echo.Context) bool {
+	for _, path := range skipTenantAuthPaths {
+		if c.Request().URL.Path == path {
+			return true
+		}
+	}
+	return false
+}
+
 
 func extractTenantID(c echo.Context, log zerolog.Logger) (int64, error) {
 	// get tenant id string from header

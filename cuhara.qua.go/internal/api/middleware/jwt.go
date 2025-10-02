@@ -10,11 +10,10 @@ import (
 	"cuhara.qua.go/internal/util"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 var (
-
+	skipJWTAuthPaths = []string{"/api/v1/auth/login", "/api/v1/auth/register", "/", "/swagger", "/docs"}
 )
 
 const AuthModeKey = "auth_mode"
@@ -33,7 +32,7 @@ type JWTConfig struct {
 
 var (
 	DefaultJWTConfig = JWTConfig{
-		Skipper: middleware.DefaultSkipper,
+		Skipper: skipJWTAuth,
 	}
 )
 
@@ -117,4 +116,13 @@ func validateJWT(tokenStr string, cfg config.AuthServer) (*jwt.RegisteredClaims,
 		return nil, httperrors.ErrInvalidToken
 	}
 	return claims, nil
+}
+
+func skipJWTAuth(c echo.Context) bool {
+	for _, path := range skipJWTAuthPaths {
+		if c.Request().URL.Path == path {
+			return true
+		}
+	}
+	return false
 }
