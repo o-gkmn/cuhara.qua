@@ -33,6 +33,6 @@ func deleteUserHandler(s *api.Server) echo.HandlerFunc {
 			return err
 		}
 
-		return util.ValidateAndReturn(c, http.StatusOK, res.ToTypes())
+		return c.JSON(http.StatusOK, res.ToTypes())
 	}
 }

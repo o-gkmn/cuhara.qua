@@ -29,7 +29,7 @@ func NewService(config config.Server, db *sql.DB) *Service {
 }
 
 func (s *Service) GetAll(ctx context.Context) ([]dto.TopicDTO, error) {
-	log := util.LogFromContext(ctx).With().Str("function", "GetTopics").Logger()
+	log := util.LogFromContext(ctx).With().Str("function", "GetAll").Logger()
 
 	tenantID, err := util.TenantIDFromContext(ctx)
 	if err != nil {
@@ -53,11 +53,13 @@ func (s *Service) GetAll(ctx context.Context) ([]dto.TopicDTO, error) {
 		}
 	}
 
+	log.Debug().Msg("Topics fetched successfully")
+
 	return topicDTOs, nil
 }
 
 func (s *Service) Create(ctx context.Context, request dto.CreateTopicRequest) (dto.CreateTopicResponse, error) {
-	log := util.LogFromContext(ctx).With().Str("function", "CreateTopic").Logger()
+	log := util.LogFromContext(ctx).With().Str("function", "Create").Logger()
 
 	tenantID, err := util.TenantIDFromContext(ctx)
 	if err != nil {
@@ -80,8 +82,8 @@ func (s *Service) Create(ctx context.Context, request dto.CreateTopicRequest) (d
 	}
 
 	topic := models.Topic{
-		Name:      request.Name,
-		TenantID:  tenantID,
+		Name:     request.Name,
+		TenantID: tenantID,
 	}
 
 	err = topic.Insert(ctx, s.db, boil.Infer())
@@ -90,11 +92,13 @@ func (s *Service) Create(ctx context.Context, request dto.CreateTopicRequest) (d
 		return dto.CreateTopicResponse{}, err
 	}
 
+	log.Debug().Msg("Topic created successfully")
+
 	return dto.CreateTopicResponse{ID: topic.ID}, nil
 }
 
 func (s *Service) Update(ctx context.Context, request dto.UpdateTopicRequest) (dto.UpdateTopicResponse, error) {
-	log := util.LogFromContext(ctx).With().Str("function", "UpdateTopic").Logger()
+	log := util.LogFromContext(ctx).With().Str("function", "Update").Logger()
 
 	tenantID, err := util.TenantIDFromContext(ctx)
 	if err != nil {
@@ -151,11 +155,13 @@ func (s *Service) Update(ctx context.Context, request dto.UpdateTopicRequest) (d
 		return dto.UpdateTopicResponse{}, err
 	}
 
+	log.Debug().Msg("Topic updated successfully")
+
 	return dto.UpdateTopicResponse{ID: topic.ID}, nil
 }
 
 func (s *Service) Delete(ctx context.Context, request dto.DeleteTopicRequest) (dto.DeleteTopicResponse, error) {
-	log := util.LogFromContext(ctx).With().Str("function", "DeleteTopic").Logger()
+	log := util.LogFromContext(ctx).With().Str("function", "Delete").Logger()
 
 	tenantID, err := util.TenantIDFromContext(ctx)
 	if err != nil {
@@ -182,6 +188,8 @@ func (s *Service) Delete(ctx context.Context, request dto.DeleteTopicRequest) (d
 		log.Error().Err(err).Msg("Failed to delete topic")
 		return dto.DeleteTopicResponse{}, err
 	}
+
+	log.Debug().Msg("Topic deleted successfully")
 
 	return dto.DeleteTopicResponse{ID: topic.ID}, nil
 }
@@ -217,6 +225,8 @@ func (s *Service) GetSubTopics(ctx context.Context, request dto.GetSubTopicsRequ
 		}
 	}
 
+	log.Debug().Msg("Sub topics fetched successfully")
+
 	return subTopicDTOs, nil
 }
 
@@ -245,9 +255,9 @@ func (s *Service) CreateSubTopic(ctx context.Context, request dto.CreateSubTopic
 	}
 
 	subTopic := models.SubTopic{
-		Name:      request.Name,
-		TopicID:   request.TopicID,
-		TenantID:  tenantID,
+		Name:     request.Name,
+		TopicID:  request.TopicID,
+		TenantID: tenantID,
 	}
 
 	err = subTopic.Insert(ctx, s.db, boil.Infer())
@@ -255,6 +265,8 @@ func (s *Service) CreateSubTopic(ctx context.Context, request dto.CreateSubTopic
 		log.Error().Err(err).Msg("Failed to create sub topic")
 		return dto.CreateSubTopicResponse{}, err
 	}
+
+	log.Debug().Msg("Sub topic created successfully")
 
 	return dto.CreateSubTopicResponse{ID: subTopic.ID}, nil
 }
@@ -320,6 +332,8 @@ func (s *Service) UpdateSubTopic(ctx context.Context, request dto.UpdateSubTopic
 		return dto.UpdateSubTopicResponse{}, err
 	}
 
+	log.Debug().Msg("Sub topic updated successfully")
+
 	return dto.UpdateSubTopicResponse{ID: subTopic.ID}, nil
 }
 
@@ -352,6 +366,8 @@ func (s *Service) DeleteSubTopic(ctx context.Context, request dto.DeleteSubTopic
 		log.Error().Err(err).Msg("Failed to delete sub topic")
 		return dto.DeleteSubTopicResponse{}, err
 	}
+
+	log.Debug().Msg("Sub topic deleted successfully")
 
 	return dto.DeleteSubTopicResponse{ID: subTopic.ID}, nil
 }

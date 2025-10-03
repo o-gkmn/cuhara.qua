@@ -51,7 +51,7 @@ type AuthService interface {
 }
 
 type UserService interface {
-	GetUsers(context.Context) ([]dto.UserDTO, error)
+	GetAll(context.Context) ([]dto.UserDTO, error)
 	Update(context.Context, dto.UpdateUserRequest) (dto.UpdateUserResponse, error)
 	Delete(context.Context, dto.DeleteUserRequest) (dto.DeleteUserResponse, error)
 }
@@ -60,7 +60,7 @@ type RoleService interface {
 	Create(context.Context, dto.CreateRoleRequest) (dto.CreateRoleResponse, error)
 	Update(context.Context, dto.UpdateRoleRequest) (dto.UpdateRoleResponse, error)
 	Delete(context.Context, dto.DeleteRoleRequest) (dto.DeleteRoleResponse, error)
-	GetRoles(context.Context) ([]dto.RoleDTO, error)
+	GetAll(context.Context) ([]dto.RoleDTO, error)
 }
 
 type TennantService interface {

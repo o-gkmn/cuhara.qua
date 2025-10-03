@@ -28,8 +28,8 @@ func NewService(config config.Server, db *sql.DB) *Service {
 	}
 }
 
-func (s *Service) GetRoles(ctx context.Context) ([]dto.RoleDTO, error) {
-	log := util.LogFromContext(ctx).With().Str("function", "GetRoles").Logger()
+func (s *Service) GetAll(ctx context.Context) ([]dto.RoleDTO, error) {
+	log := util.LogFromContext(ctx).With().Str("function", "GetAll").Logger()
 	tenantID, err := util.TenantIDFromContext(ctx)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to get tenant id from context")
@@ -53,11 +53,13 @@ func (s *Service) GetRoles(ctx context.Context) ([]dto.RoleDTO, error) {
 		}
 	}
 
+	log.Debug().Msg("Roles fetched successfully")
+
 	return roleDTOs, nil
 }
 
 func (s *Service) Create(ctx context.Context, request dto.CreateRoleRequest) (dto.CreateRoleResponse, error) {
-	log := util.LogFromContext(ctx).With().Str("function", "CreateRole").Logger()
+	log := util.LogFromContext(ctx).With().Str("function", "Create").Logger()
 
 	tenantID, err := util.TenantIDFromContext(ctx)
 	if err != nil {
@@ -91,11 +93,13 @@ func (s *Service) Create(ctx context.Context, request dto.CreateRoleRequest) (dt
 		return dto.CreateRoleResponse{}, err
 	}
 
+	log.Debug().Msg("Role created successfully")
+
 	return dto.CreateRoleResponse{ID: role.ID}, nil
 }
 
 func (s *Service) Update(ctx context.Context, request dto.UpdateRoleRequest) (dto.UpdateRoleResponse, error) {
-	log := util.LogFromContext(ctx).With().Int64("id", request.ID).Logger()
+	log := util.LogFromContext(ctx).With().Str("function", "Update").Logger()
 
 	tenantID, err := util.TenantIDFromContext(ctx)
 	if err != nil {
@@ -154,11 +158,13 @@ func (s *Service) Update(ctx context.Context, request dto.UpdateRoleRequest) (dt
 		return dto.UpdateRoleResponse{}, err
 	}
 
+	log.Debug().Msg("Role updated successfully")
+
 	return dto.UpdateRoleResponse{ID: role.ID}, nil
 }
 
 func (s *Service) Delete(ctx context.Context, request dto.DeleteRoleRequest) (dto.DeleteRoleResponse, error) {
-	log := util.LogFromContext(ctx).With().Int64("id", request.ID).Logger()
+	log := util.LogFromContext(ctx).With().Str("function", "Delete").Logger()
 
 	tenantID, err := util.TenantIDFromContext(ctx)
 	if err != nil {
@@ -178,6 +184,8 @@ func (s *Service) Delete(ctx context.Context, request dto.DeleteRoleRequest) (dt
 	if n == 0 {
 		return dto.DeleteRoleResponse{}, httperrors.ErrRoleNotFound
 	}
+
+	log.Debug().Msg("Role deleted successfully")
 
 	return dto.DeleteRoleResponse(request), nil
 }

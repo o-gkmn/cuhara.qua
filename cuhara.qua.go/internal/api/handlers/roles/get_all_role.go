@@ -16,7 +16,7 @@ func getAll(s *api.Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
 
-		roles, err := s.Role.GetRoles(ctx)
+		roles, err := s.Role.GetAll(ctx)
 		if err != nil {
 			return err
 		}

@@ -30,7 +30,7 @@ func NewService(config config.Server, db *sql.DB) *Service {
 
 // Login implements infra.AuthService.
 func (s *Service) Login(ctx context.Context, request dto.LoginRequest) (dto.LoginResponse, error) {
-	log := util.LogFromContext(ctx).With().Str("email", request.Email).Logger()
+	log := util.LogFromContext(ctx).With().Str("function", "Login").Logger()
 
 	user, err := models.Users(
 		models.UserWhere.Email.EQ(request.Email),
@@ -65,12 +65,14 @@ func (s *Service) Login(ctx context.Context, request dto.LoginRequest) (dto.Logi
 		return dto.LoginResponse{}, err
 	}
 
+	log.Debug().Msg("Login service successfully executed")
+
 	return dto.LoginResponse{Token: token}, nil
 }
 
 // Register implements infra.AuthService.
 func (s *Service) Register(ctx context.Context, request dto.RegisterRequest) (dto.LoginResponse, error) {
-	log := util.LogFromContext(ctx).With().Str("email", request.Email).Logger()
+	log := util.LogFromContext(ctx).With().Str("function", "Register").Logger()
 
 	tenantID, err := util.TenantIDFromContext(ctx)
 	if err != nil {
@@ -127,6 +129,8 @@ func (s *Service) Register(ctx context.Context, request dto.RegisterRequest) (dt
 
 		return nil
 	})
+
+	log.Debug().Msg("Register service successfully executed")
 
 	return result, nil
 }

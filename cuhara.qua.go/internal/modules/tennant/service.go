@@ -29,7 +29,7 @@ func NewService(config config.Server, db *sql.DB) *Service {
 }
 
 func (s *Service) GetAll(ctx context.Context) ([]dto.TenantDTO, error) {
-	log := util.LogFromContext(ctx).With().Str("function", "GetTenants").Logger()
+	log := util.LogFromContext(ctx).With().Str("function", "GetAll").Logger()
 
 	tenants, err := models.Tenants().All(ctx, s.db)
 	if err != nil {
@@ -45,11 +45,13 @@ func (s *Service) GetAll(ctx context.Context) ([]dto.TenantDTO, error) {
 		}
 	}
 
+	log.Debug().Msg("Tenants fetched successfully")
+
 	return tenantDTOs, nil
 }
 
 func (s *Service) Create(ctx context.Context, request dto.CreateTenantRequest) (dto.CreateTenantResponse, error) {
-	log := util.LogFromContext(ctx).With().Str("name", request.Name).Logger()
+	log := util.LogFromContext(ctx).With().Str("function", "Create").Logger()
 
 	//Checked tenant existence
 	exists, err := models.Tenants(
@@ -88,11 +90,13 @@ func (s *Service) Create(ctx context.Context, request dto.CreateTenantRequest) (
 		return dto.CreateTenantResponse{}, err
 	}
 
+	log.Debug().Msg("Tenant created successfully")
+
 	return result, nil
 }
 
 func (s *Service) Update(ctx context.Context, request dto.UpdateTenantRequest) (dto.UpdateTenantResponse, error) {
-	log := util.LogFromContext(ctx).With().Int64("id", request.ID).Logger()
+	log := util.LogFromContext(ctx).With().Str("function", "Update").Logger()
 
 	t, err := models.Tenants(
 		models.TenantWhere.ID.EQ(request.ID),
@@ -144,11 +148,13 @@ func (s *Service) Update(ctx context.Context, request dto.UpdateTenantRequest) (
 		return dto.UpdateTenantResponse{}, err
 	}
 
+	log.Debug().Msg("Tenant updated successfully")
+
 	return dto.UpdateTenantResponse{ID: t.ID}, nil
 }
 
 func (s *Service) Delete(ctx context.Context, request dto.DeleteTenantRequest) (dto.DeleteTenantResponse, error) {
-	log := util.LogFromContext(ctx).With().Int64("id", request.ID).Logger()
+	log := util.LogFromContext(ctx).With().Str("function", "Delete").Logger()
 
 	tenant, err := models.Tenants(
 		models.TenantWhere.ID.EQ(request.ID),
@@ -168,6 +174,8 @@ func (s *Service) Delete(ctx context.Context, request dto.DeleteTenantRequest) (
 		log.Error().Err(err).Msg("Failed to delete tenant")
 		return dto.DeleteTenantResponse{}, err
 	}
+
+	log.Debug().Msg("Tenant deleted successfully")
 
 	return dto.DeleteTenantResponse{ID: tenant.ID}, nil
 }

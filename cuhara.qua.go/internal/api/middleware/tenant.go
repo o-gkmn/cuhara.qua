@@ -54,13 +54,10 @@ func TenantAuth(s *api.Server) echo.MiddlewareFunc {
 				return err
 			}
 
-			log.Info().
-				Int64("user_id", userID).
-				Int64("tenant_id", tenantID).
-				Msg("tenant validation successful")
-
 			ctx = context.WithValue(ctx, util.CTXKeyTenant, tenantID)
 			c.SetRequest(c.Request().WithContext(ctx))
+
+			log.Debug().Msg("tenant validation successful")
 
 			return next(c)
 		}

@@ -7,7 +7,6 @@ import (
 	"cuhara.qua.go/internal/api"
 	"cuhara.qua.go/internal/api/httperrors"
 	"cuhara.qua.go/internal/data/dto"
-	"cuhara.qua.go/internal/util"
 	"github.com/labstack/echo/v4"
 )
 
@@ -32,6 +31,6 @@ func deleteClaimHandler(s *api.Server) echo.HandlerFunc {
 			return err
 		}
 
-		return util.ValidateAndReturn(c, http.StatusOK, res.ToTypes())
+		return c.JSON(http.StatusOK, res.ToTypes())
 	}
 }

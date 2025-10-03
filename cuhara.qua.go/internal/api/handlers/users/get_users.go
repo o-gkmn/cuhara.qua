@@ -16,7 +16,7 @@ func getUsersHandler(s *api.Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
 
-		users, err := s.User.GetUsers(ctx)
+		users, err := s.User.GetAll(ctx)
 		if err != nil {
 			return err
 		}

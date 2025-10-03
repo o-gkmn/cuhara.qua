@@ -77,6 +77,7 @@ func handleParameterError(reqErr *openapi3filter.RequestError) error {
 	fieldName := reqErr.Parameter.Name
 	location := reqErr.Parameter.In
 
+	log.Error().Any("reqErr", reqErr).Msg("handleParameterError")
 
 	return httperrors.NewHTTPValidationError(
 		http.StatusBadRequest,

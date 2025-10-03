@@ -2,11 +2,12 @@ package topics
 
 import (
 	"net/http"
+	"strconv"
 
 	"cuhara.qua.go/internal/api"
 	"cuhara.qua.go/internal/data/dto"
-	"cuhara.qua.go/internal/util"
 	"github.com/labstack/echo/v4"
+	"github.com/rs/zerolog/log"
 )
 
 func DeleteSubTopicRouter(s *api.Server) *echo.Route {
@@ -17,15 +18,18 @@ func deleteSubTopicHandler(s *api.Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
 
-		var topicID int64
-		err := util.BindValidatePathParams(c, &topicID)
+
+		var topicIDStr = c.Param("id")
+		topicID, err := strconv.ParseInt(topicIDStr, 10, 64)
 		if err != nil {
+			log.Error().Err(err).Msg("Failed to parse topic id")
 			return err
 		}
-		
-		var subTopicID int64
-		err = util.BindValidatePathParams(c, &subTopicID)
+
+		var subTopicIDStr = c.Param("subTopicID")
+		subTopicID, err := strconv.ParseInt(subTopicIDStr, 10, 64)
 		if err != nil {
+			log.Error().Err(err).Msg("Failed to parse sub topic id")
 			return err
 		}
 		
@@ -38,6 +42,6 @@ func deleteSubTopicHandler(s *api.Server) echo.HandlerFunc {
 		}
 		
 		
-		return util.ValidateAndReturn(c, http.StatusOK, res.ToTypes())
+		return c.JSON(http.StatusOK, res.ToTypes())
 	}
 }

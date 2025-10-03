@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"strconv"
 
 	"cuhara.qua.go/internal/api/httperrors"
 	"cuhara.qua.go/internal/config"
@@ -27,8 +26,8 @@ func NewService(config config.Server, db *sql.DB) *Service {
 	}
 }
 
-func (s *Service) GetUsers(ctx context.Context) ([]dto.UserDTO, error) {
-	log := util.LogFromContext(ctx).With().Str("function", "GetUsers").Logger()
+func (s *Service) GetAll(ctx context.Context) ([]dto.UserDTO, error) {
+	log := util.LogFromContext(ctx).With().Str("function", "GetAll").Logger()
 
 	tenantID, err := util.TenantIDFromContext(ctx)
 	if err != nil {
@@ -59,11 +58,13 @@ func (s *Service) GetUsers(ctx context.Context) ([]dto.UserDTO, error) {
 		}
 	}
 
+	log.Debug().Msg("Users fetched successfully")
+
 	return userDTOs, nil
 }
 
 func (s *Service) Update(ctx context.Context, request dto.UpdateUserRequest) (dto.UpdateUserResponse, error) {
-	log := util.LogFromContext(ctx).With().Str("id", strconv.Itoa(int(request.ID))).Logger()
+	log := util.LogFromContext(ctx).With().Str("function", "Update").Logger()
 
 	tenantID, err := util.TenantIDFromContext(ctx)
 	if err != nil {
@@ -169,11 +170,13 @@ func (s *Service) Update(ctx context.Context, request dto.UpdateUserRequest) (dt
 		return dto.UpdateUserResponse{}, err
 	}
 
+	log.Debug().Msg("User updated successfully")
+
 	return dto.UpdateUserResponse{ID: user.ID}, nil
 }
 
 func (s *Service) Delete(ctx context.Context, request dto.DeleteUserRequest) (dto.DeleteUserResponse, error) {
-	log := util.LogFromContext(ctx).With().Int64("id", request.ID).Logger()
+	log := util.LogFromContext(ctx).With().Str("function", "Delete").Logger()
 
 	tenantID, err := util.TenantIDFromContext(ctx)
 	if err != nil {
@@ -200,6 +203,8 @@ func (s *Service) Delete(ctx context.Context, request dto.DeleteUserRequest) (dt
 		log.Err(err).Msg("Failed to delete user")
 		return dto.DeleteUserResponse{}, err
 	}
+
+	log.Debug().Msg("User deleted successfully")
 
 	return dto.DeleteUserResponse(request), nil
 }

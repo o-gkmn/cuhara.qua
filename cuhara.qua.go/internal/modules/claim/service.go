@@ -52,6 +52,8 @@ func (s *Service) GetAll(ctx context.Context) ([]dto.ClaimDTO, error) {
 		}
 	}
 
+	log.Debug().Msg("Claims fetched successfully")
+
 	return claimDTOs, nil
 }
 
@@ -89,6 +91,8 @@ func (s *Service) Create(ctx context.Context, request dto.CreateClaimRequest) (d
 		log.Error().Err(err).Msg("Failed to create claim")
 		return dto.CreateClaimResponse{}, err
 	}
+
+	log.Debug().Msg("Claim created successfully")
 
 	return dto.CreateClaimResponse{ID: claim.ID}, nil
 }
@@ -152,6 +156,8 @@ func (s *Service) Update(ctx context.Context, request dto.UpdateClaimRequest) (d
 		return dto.UpdateClaimResponse{}, err
 	}
 
+	log.Debug().Msg("Claim updated successfully")
+
 	return dto.UpdateClaimResponse{ID: claim.ID}, nil
 }
 
@@ -183,6 +189,8 @@ func (s *Service) Delete(ctx context.Context, request dto.DeleteClaimRequest) (d
 		log.Error().Err(err).Msg("Failed to delete claim")
 		return dto.DeleteClaimResponse{}, err
 	}
+
+	log.Debug().Msg("Claim deleted successfully")
 
 	return dto.DeleteClaimResponse{ID: claim.ID}, nil
 }
