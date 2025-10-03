@@ -16,7 +16,10 @@ func UpdateUserRoute(s *api.Server) *echo.Route {
 
 func updateUserHandler(s *api.Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		log := util.LogFromEchoContext(c).With().Str("function", "updateUserHandler").Logger()
 		ctx := c.Request().Context()
+
+		log.Debug().Msg("updateUserHandler started")
 
 		var id int64
 		err := util.BindValidatePathParams(c, &id)
@@ -39,6 +42,8 @@ func updateUserHandler(s *api.Server) echo.HandlerFunc {
 		if err != nil {
 			return err
 		}
+
+		log.Debug().Msg("updateUserHandler successfully executed")
 
 		return c.JSON(http.StatusOK, res.ToTypes())
 	}

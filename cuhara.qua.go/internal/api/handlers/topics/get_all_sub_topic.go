@@ -6,8 +6,8 @@ import (
 
 	"cuhara.qua.go/internal/api"
 	"cuhara.qua.go/internal/data/dto"
+	"cuhara.qua.go/internal/util"
 	"github.com/labstack/echo/v4"
-	"github.com/rs/zerolog/log"
 )
 
 func GetAllSubTopicRouter(s *api.Server) *echo.Route {
@@ -16,7 +16,10 @@ func GetAllSubTopicRouter(s *api.Server) *echo.Route {
 
 func getAllSubTopicHandler(s *api.Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		log := util.LogFromEchoContext(c).With().Str("function", "getAllSubTopicHandler").Logger()
 		ctx := c.Request().Context()
+
+		log.Debug().Msg("getAllSubTopicHandler started")
 
 		var topicIDStr = c.Param("id")
 		topicID, err := strconv.ParseInt(topicIDStr, 10, 64)
@@ -32,6 +35,8 @@ func getAllSubTopicHandler(s *api.Server) echo.HandlerFunc {
 		if err != nil {
 			return err
 		}
+
+		log.Debug().Msg("getAllSubTopicHandler successfully executed")
 
 		return c.JSON(http.StatusOK, res)
 	}

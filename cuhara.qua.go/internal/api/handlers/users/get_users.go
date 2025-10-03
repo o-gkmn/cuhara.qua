@@ -5,6 +5,7 @@ import (
 
 	"cuhara.qua.go/internal/api"
 	"cuhara.qua.go/internal/types"
+	"cuhara.qua.go/internal/util"
 	"github.com/labstack/echo/v4"
 )
 
@@ -14,7 +15,10 @@ func GetUsersRouter(s *api.Server) *echo.Route {
 
 func getUsersHandler(s *api.Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		log := util.LogFromEchoContext(c).With().Str("function", "getUsersHandler").Logger()
 		ctx := c.Request().Context()
+
+		log.Debug().Msg("getUsersHandler started")
 
 		users, err := s.User.GetAll(ctx)
 		if err != nil {
@@ -25,6 +29,8 @@ func getUsersHandler(s *api.Server) echo.HandlerFunc {
 		for i, user := range users {
 			userResponses[i] = user.ToTypes()
 		}
+
+		log.Debug().Msg("getUsersHandler successfully executed")
 
 		return c.JSON(http.StatusOK, userResponses)
 	}

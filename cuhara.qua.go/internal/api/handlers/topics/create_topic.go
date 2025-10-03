@@ -16,7 +16,10 @@ func CreateTopicRouter(s *api.Server) *echo.Route {
 
 func createTopicHandler(s *api.Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		log := util.LogFromEchoContext(c).With().Str("function", "createTopicHandler").Logger()
 		ctx := c.Request().Context()
+
+		log.Debug().Msg("createTopicHandler started")
 
 		var body types.CreateTopicRequest
 		if err := util.BindAndValidateBody(c, &body); err != nil {
@@ -29,7 +32,9 @@ func createTopicHandler(s *api.Server) echo.HandlerFunc {
 		if err != nil {
 			return err
 		}
-		
+
+		log.Debug().Msg("createTopicHandler successfully executed")
+
 		return c.JSON(http.StatusOK, res.ToTypes())
 	}
 }

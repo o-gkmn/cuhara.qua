@@ -8,7 +8,6 @@ import (
 	"cuhara.qua.go/internal/data/dto"
 	"cuhara.qua.go/internal/util"
 	"github.com/labstack/echo/v4"
-	"github.com/rs/zerolog/log"
 )
 
 func CreateSubTopicRouter(s *api.Server) *echo.Route {
@@ -17,7 +16,10 @@ func CreateSubTopicRouter(s *api.Server) *echo.Route {
 
 func createSubTopicHandler(s *api.Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		log := util.LogFromEchoContext(c).With().Str("function", "createSubTopicHandler").Logger()
 		ctx := c.Request().Context()
+
+		log.Debug().Msg("createSubTopicHandler started")
 
 		var topicIDStr = c.Param("id")
 		topicID, err := strconv.ParseInt(topicIDStr, 10, 64)
@@ -38,6 +40,8 @@ func createSubTopicHandler(s *api.Server) echo.HandlerFunc {
 		if err != nil {
 			return err
 		}
+
+		log.Debug().Msg("createSubTopicHandler successfully executed")
 
 		return c.JSON(http.StatusOK, res.ToTypes())
 	}

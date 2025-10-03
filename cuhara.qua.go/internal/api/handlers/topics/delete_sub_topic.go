@@ -6,8 +6,8 @@ import (
 
 	"cuhara.qua.go/internal/api"
 	"cuhara.qua.go/internal/data/dto"
+	"cuhara.qua.go/internal/util"
 	"github.com/labstack/echo/v4"
-	"github.com/rs/zerolog/log"
 )
 
 func DeleteSubTopicRouter(s *api.Server) *echo.Route {
@@ -16,8 +16,10 @@ func DeleteSubTopicRouter(s *api.Server) *echo.Route {
 
 func deleteSubTopicHandler(s *api.Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		log := util.LogFromEchoContext(c).With().Str("function", "deleteSubTopicHandler").Logger()
 		ctx := c.Request().Context()
 
+		log.Debug().Msg("deleteSubTopicHandler started")
 
 		var topicIDStr = c.Param("id")
 		topicID, err := strconv.ParseInt(topicIDStr, 10, 64)
@@ -32,7 +34,7 @@ func deleteSubTopicHandler(s *api.Server) echo.HandlerFunc {
 			log.Error().Err(err).Msg("Failed to parse sub topic id")
 			return err
 		}
-		
+
 		res, err := s.Topic.DeleteSubTopic(ctx, dto.DeleteSubTopicRequest{
 			ID:      subTopicID,
 			TopicID: topicID,
@@ -40,8 +42,9 @@ func deleteSubTopicHandler(s *api.Server) echo.HandlerFunc {
 		if err != nil {
 			return err
 		}
-		
-		
+
+		log.Debug().Msg("deleteSubTopicHandler successfully executed")
+
 		return c.JSON(http.StatusOK, res.ToTypes())
 	}
 }

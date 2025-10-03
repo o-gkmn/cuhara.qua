@@ -17,7 +17,10 @@ func LoginRouter(s *api.Server) *echo.Route {
 
 func loginHandler(s *api.Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		log := util.LogFromEchoContext(c).With().Str("function", "loginHandler").Logger()
 		ctx := c.Request().Context()
+
+		log.Debug().Msg("loginHandler started")
 
 		var body types.LoginRequest
 		if err := util.BindAndValidateBody(c, &body); err != nil {
@@ -32,6 +35,8 @@ func loginHandler(s *api.Server) echo.HandlerFunc {
 			return err
 		}
 
+		log.Debug().Msg("loginHandler successfully executed")
+		
 		return c.JSON(http.StatusOK, res.ToTypes())
 	}
 }

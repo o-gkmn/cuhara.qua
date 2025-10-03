@@ -16,7 +16,10 @@ func CreateRoleRouter(s *api.Server) *echo.Route {
 
 func createRoleHandler(s *api.Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		log := util.LogFromEchoContext(c).With().Str("function", "createRoleHandler").Logger()
 		ctx := c.Request().Context()
+
+		log.Debug().Msg("createRoleHandler started")
 
 		var body types.CreateRoleRequest
 		if err := util.BindAndValidateBody(c, &body); err != nil {
@@ -24,11 +27,13 @@ func createRoleHandler(s *api.Server) echo.HandlerFunc {
 		}
 
 		res, err := s.Role.Create(ctx, dto.CreateRoleRequest{
-			Name:     body.Name,
+			Name: body.Name,
 		})
 		if err != nil {
 			return err
 		}
+
+		log.Debug().Msg("createRoleHandler successfully executed")
 
 		return c.JSON(http.StatusOK, res.ToTypes())
 	}

@@ -16,7 +16,10 @@ func RegisterRouter(s *api.Server) *echo.Route {
 
 func registerHandler(s *api.Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		log := util.LogFromEchoContext(c).With().Str("function", "registerHandler").Logger()
 		ctx := c.Request().Context()
+
+		log.Debug().Msg("registerHandler started")
 
 		var body types.RegisterRequest
 		if err := util.BindAndValidateBody(c, &body); err != nil {
@@ -32,6 +35,8 @@ func registerHandler(s *api.Server) echo.HandlerFunc {
 		if err != nil {
 			return err
 		}
+
+		log.Debug().Msg("registerHandler successfully executed")
 
 		return c.JSON(http.StatusOK, res.ToTypes())
 	}

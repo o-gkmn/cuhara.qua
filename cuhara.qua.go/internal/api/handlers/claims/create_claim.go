@@ -16,7 +16,10 @@ func CreateClaimRouter(s *api.Server) *echo.Route {
 
 func createClaimHandler(s *api.Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		log := util.LogFromEchoContext(c).With().Str("function", "createClaimHandler").Logger()
 		ctx := c.Request().Context()
+
+		log.Debug().Msg("createClaimHandler started")
 
 		var body types.CreateClaimRequest
 		if err := util.BindAndValidateBody(c, &body); err != nil {
@@ -30,6 +33,8 @@ func createClaimHandler(s *api.Server) echo.HandlerFunc {
 		if err != nil {
 			return err
 		}
+
+		log.Debug().Msg("createClaimHandler successfully executed")
 
 		return c.JSON(http.StatusOK, res.ToTypes())
 	}

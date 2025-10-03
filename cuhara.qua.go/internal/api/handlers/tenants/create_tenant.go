@@ -16,7 +16,10 @@ func CreateTenantRouter(s *api.Server) *echo.Route {
 
 func createTenantHandler(s *api.Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		log := util.LogFromEchoContext(c).With().Str("function", "createTenantHandler").Logger()
 		ctx := c.Request().Context()
+
+		log.Debug().Msg("createTenantHandler started")
 
 		var body types.CreateTenantRequest
 		if err := util.BindAndValidateBody(c, &body); err != nil {
@@ -30,6 +33,8 @@ func createTenantHandler(s *api.Server) echo.HandlerFunc {
 		if err != nil {
 			return err
 		}
+
+		log.Debug().Msg("createTenantHandler successfully executed")
 
 		return c.JSON(http.StatusOK, res.ToTypes())
 	}

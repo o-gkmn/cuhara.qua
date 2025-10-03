@@ -16,8 +16,10 @@ func DeleteUserRoute(s *api.Server) *echo.Route {
 
 func deleteUserHandler(s *api.Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		log := util.LogFromEchoContext(c).With().Str("id", c.Param("id")).Logger()
+		log := util.LogFromEchoContext(c).With().Str("function", "deleteUserHandler").Str("id", c.Param("id")).Logger()
 		ctx := c.Request().Context()
+
+		log.Debug().Msg("deleteUserHandler started")
 
 		param := c.Param("id")
 		id, err := strconv.ParseInt(param, 10, 64)
@@ -32,6 +34,8 @@ func deleteUserHandler(s *api.Server) echo.HandlerFunc {
 			log.Err(err).Msg("Failed to delete user")
 			return err
 		}
+
+		log.Debug().Msg("deleteUserHandler successfully executed")
 
 		return c.JSON(http.StatusOK, res.ToTypes())
 	}

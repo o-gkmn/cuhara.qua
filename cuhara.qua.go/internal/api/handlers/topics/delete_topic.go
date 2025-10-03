@@ -7,6 +7,7 @@ import (
 	"cuhara.qua.go/internal/api"
 	"cuhara.qua.go/internal/api/httperrors"
 	"cuhara.qua.go/internal/data/dto"
+	"cuhara.qua.go/internal/util"
 	"github.com/labstack/echo/v4"
 )
 
@@ -16,7 +17,10 @@ func DeleteTopicRouter(s *api.Server) *echo.Route {
 
 func deleteTopicHandler(s *api.Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		log := util.LogFromEchoContext(c).With().Str("function", "deleteTopicHandler").Logger()
 		ctx := c.Request().Context()
+
+		log.Debug().Msg("deleteTopicHandler started")
 
 		param := c.Param("id")
 		id, err := strconv.ParseInt(param, 10, 64)
@@ -30,6 +34,8 @@ func deleteTopicHandler(s *api.Server) echo.HandlerFunc {
 		if err != nil {
 			return err
 		}
+
+		log.Debug().Msg("deleteTopicHandler successfully executed")
 
 		return c.JSON(http.StatusOK, res.ToTypes())
 	}

@@ -5,6 +5,7 @@ import (
 
 	"cuhara.qua.go/internal/api"
 	"cuhara.qua.go/internal/types"
+	"cuhara.qua.go/internal/util"
 	"github.com/labstack/echo/v4"
 )
 
@@ -14,7 +15,10 @@ func GetAllRouter(s *api.Server) *echo.Route {
 
 func getAllHandler(s *api.Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		log := util.LogFromEchoContext(c).With().Str("function", "getAllHandler").Logger()
 		ctx := c.Request().Context()
+
+		log.Debug().Msg("getAllHandler started")
 
 		claims, err := s.Claim.GetAll(ctx)
 		if err != nil {
@@ -25,6 +29,8 @@ func getAllHandler(s *api.Server) echo.HandlerFunc {
 		for i, claim := range claims {
 			claimResponses[i] = *claim.ToTypes()
 		}
+
+		log.Debug().Msg("getAllHandler successfully executed")
 
 		return c.JSON(http.StatusOK, claimResponses)
 	}

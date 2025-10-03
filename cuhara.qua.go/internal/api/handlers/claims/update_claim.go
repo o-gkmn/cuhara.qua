@@ -18,7 +18,10 @@ func UpdateClaimRouter(s *api.Server) *echo.Route {
 
 func updateClaimHandler(s *api.Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		log := util.LogFromEchoContext(c).With().Str("function", "updateClaimHandler").Logger()
 		ctx := c.Request().Context()
+
+		log.Debug().Msg("updateClaimHandler started")
 
 		idStr := c.Param("id")
 		id, err := strconv.ParseInt(idStr, 10, 64)
@@ -39,6 +42,8 @@ func updateClaimHandler(s *api.Server) echo.HandlerFunc {
 		if err != nil {
 			return err
 		}
+
+		log.Debug().Msg("updateClaimHandler successfully executed")
 
 		return c.JSON(http.StatusOK, res.ToTypes())
 	}

@@ -18,7 +18,10 @@ func UpdateRoleRouter(s *api.Server) *echo.Route {
 
 func updateRoleHandler(s *api.Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		log := util.LogFromEchoContext(c).With().Str("function", "updateRoleHandler").Logger()
 		ctx := c.Request().Context()
+
+		log.Debug().Msg("updateRoleHandler started")
 
 		param := c.Param("id")
 		id, err := strconv.ParseInt(param, 10, 64)
@@ -38,6 +41,8 @@ func updateRoleHandler(s *api.Server) echo.HandlerFunc {
 		if err != nil {
 			return err
 		}
+
+		log.Debug().Msg("updateRoleHandler successfully executed")
 
 		return c.JSON(http.StatusOK, res.ToTypes())
 	}

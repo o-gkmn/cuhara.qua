@@ -7,6 +7,7 @@ import (
 	"cuhara.qua.go/internal/api"
 	"cuhara.qua.go/internal/api/httperrors"
 	"cuhara.qua.go/internal/data/dto"
+	"cuhara.qua.go/internal/util"
 	"github.com/labstack/echo/v4"
 )
 
@@ -16,7 +17,10 @@ func DeleteClaimRouter(s *api.Server) *echo.Route {
 
 func deleteClaimHandler(s *api.Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		log := util.LogFromEchoContext(c).With().Str("function", "deleteClaimHandler").Logger()
 		ctx := c.Request().Context()
+
+		log.Debug().Msg("deleteClaimHandler started")
 
 		idStr := c.Param("id")
 		id, err := strconv.ParseInt(idStr, 10, 64)
@@ -30,6 +34,8 @@ func deleteClaimHandler(s *api.Server) echo.HandlerFunc {
 		if err != nil {
 			return err
 		}
+
+		log.Debug().Msg("deleteClaimHandler successfully executed")
 
 		return c.JSON(http.StatusOK, res.ToTypes())
 	}
