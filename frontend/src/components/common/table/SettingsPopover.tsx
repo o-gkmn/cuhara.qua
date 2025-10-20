@@ -1,49 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { FaGripVertical } from "react-icons/fa6";
-import type { TableColumnProps, TableProps } from "../Table";
+import type { TableColumnProps } from "../Table";
 import { useTableContext } from "../../../context/TableContext";
 
-export default function TableSettings<T extends Record<string, unknown>>(props: TableProps) {
+export default function SettingsPopover() {
     const [settingsPopoverRef, setSettingsPopoverRef] = useState<HTMLDivElement | null>(null)
     const [settingsPosition, setSettingsPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 })
     const settingsCloseTimerRef = useRef<number | null>(null)
 
-    const [activeColumns, setActiveColumns] = useState<TableColumnProps<T>[]>(props.columns.filter((column) => column.show))
-    const [columnOrder, setColumnOrder] = useState<string[]>(props.columns.map((c) => c.key))
+    const { isSettingsOpen, setIsSettingsOpen, settingsButtonRef, columns, setColumns } = useTableContext();
     const [draggingKey, setDraggingKey] = useState<string | null>(null)
-
-    const { isSettingsOpen, setIsSettingsOpen, settingsButtonRef } = useTableContext();
-
-    useEffect(() => {
-        if (!isSettingsOpen) return
-        function handleSettingsOutsideMouseDown(e: MouseEvent) {
-            if (draggingKey) return
-            const target = e.target as Node | null
-            if (!target) return
-            if (settingsPopoverRef && settingsPopoverRef.contains(target)) return
-            if (settingsButtonRef.current && settingsButtonRef.current?.contains(target)) return
-            setIsSettingsOpen(false)
-        }
-        document.addEventListener('mousedown', handleSettingsOutsideMouseDown)
-        return () => {
-            document.removeEventListener('mousedown', handleSettingsOutsideMouseDown)
-        }
-    }, [isSettingsOpen, settingsPopoverRef, draggingKey, settingsButtonRef, setIsSettingsOpen])
-
-    // Close settings popover on Escape for usability
-    useEffect(() => {
-        if (!isSettingsOpen) return
-        function handleEscape(e: KeyboardEvent) {
-            if (draggingKey) return
-            if (e.key === 'Escape') {
-                setIsSettingsOpen(false)
-            }
-        }
-        document.addEventListener('keydown', handleEscape)
-        return () => {
-            document.removeEventListener('keydown', handleEscape)
-        }
-    }, [isSettingsOpen, draggingKey, setIsSettingsOpen])
 
     // Keep open when hovering button or popover; close when leaving both with a small grace period
     useEffect(() => {
@@ -95,9 +61,8 @@ export default function TableSettings<T extends Record<string, unknown>>(props: 
         }
     }, [isSettingsOpen, settingsButtonRef])
 
-    function handleColumnChange(column: TableColumnProps<T>) {
-        props.columns.find(c => c.key === column.key)!.show = !column.show
-        setActiveColumns(props.columns.filter((c) => c.show))
+    function handleColumnChange(column: TableColumnProps) {
+        setColumns(columns.map((c) => c.key === column.key ? { ...c, show: !c.show } : c))
     }
 
     function handleDragStart(key: string) {
@@ -106,24 +71,17 @@ export default function TableSettings<T extends Record<string, unknown>>(props: 
 
     function handleDrop(targetKey: string) {
         if (!draggingKey || draggingKey === targetKey) return
-        const current = [...columnOrder]
-        const fromIndex = current.indexOf(draggingKey)
-        const toIndex = current.indexOf(targetKey)
+        const current = [...columns]
+        const fromIndex = current.findIndex((c) => c.key === draggingKey)
+        const toIndex = current.findIndex((c) => c.key === targetKey)
         if (fromIndex === -1 || toIndex === -1) {
             setDraggingKey(null)
             return
         }
         current.splice(fromIndex, 1)
-        current.splice(toIndex, 0, draggingKey)
-        setColumnOrder(current)
+        current.splice(toIndex, 0, columns.find((c) => c.key === draggingKey)!)
+        setColumns(current)
         setDraggingKey(null)
-    }
-
-    function orderedActiveColumns(): TableColumnProps<T>[] {
-        const keyToColumn = new Map(activeColumns.map((c) => [c.key, c]))
-        return columnOrder
-            .map((k) => keyToColumn.get(k))
-            .filter((c): c is TableColumnProps<T> => Boolean(c))
     }
 
     return isSettingsOpen && settingsButtonRef.current && (
@@ -138,8 +96,7 @@ export default function TableSettings<T extends Record<string, unknown>>(props: 
         >
             <div className="text-sm text-slate-700 font-semibold mb-2">Sütunlar</div>
             <div className="flex flex-col gap-1 text-left text-sm text-slate-700 bg-gray-100 rounded-md p-2">
-                {columnOrder.map((key) => {
-                    const column = props.columns.find((c) => c.key === key)!
+                {columns.map((column) => {
                     return (
                         <div
                             key={column.key}

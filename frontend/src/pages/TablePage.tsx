@@ -1,5 +1,6 @@
 import Table, { type TableColumnProps, type TableProps } from "../components/common/Table";
 import MainLayout from "../components/layouts/MainLayout";
+import { TableProvider } from "../context/TableContext";
 
 type Row = {
     id: number
@@ -127,20 +128,25 @@ export default function TablePage() {
         columns: columns as TableColumnProps<Row>[],
         data: data as Row[],
         title: 'Users',
-        onNew: () => {
-            console.log('new')
-        },
-        onDelete: (item) => {
-            console.log('delete', item)
-        },
-        onRefresh: () => {
-            console.log('refresh')
-        },
-        onExport: () => {
-            console.log('export')
-        },
-        onFilter: () => {
-            console.log("filter")
+        toolbar: {
+            onRefresh: () => {
+                console.log('refresh')
+            },
+            onExport: () => {
+                console.log('export')
+            },
+            onFilter: (query) => {
+                console.log(query)
+            },
+            onNew: () => {
+                console.log('new')
+            },
+            onDelete: () => {
+                console.log('delete')
+            },
+            onSettings: () => {
+                console.log('settings')
+            },
         },
         onSorted: () => {
             console.log("sorded")
@@ -156,7 +162,9 @@ export default function TablePage() {
 
     return (
         <MainLayout>
-            <Table {...tableProps} />
+            <TableProvider columns={columns as TableColumnProps[]}>
+                <Table {...tableProps} />
+            </TableProvider>
         </MainLayout >
     )
 }

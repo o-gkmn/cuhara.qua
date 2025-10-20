@@ -1,22 +1,34 @@
 import { useState } from "react"
-import type { TableProps } from "../Table"
 import { FaArrowDown, FaArrowRotateRight, FaEllipsis, FaFilter, FaGear, FaPlus, FaTrash } from "react-icons/fa6"
-import { TableProvider, useTableContext } from "../../../context/TableContext"
+import { useTableContext } from "../../../context/TableContext"
 
-export default function TableToolbar(props: TableProps) {
+export interface ToolbarProps {
+    title?: string
+    onRefresh?: () => void
+    onExport?: () => void
+    onFilter?: (query: string) => void
+    onNew?: () => void
+    onDelete?: () => void
+    onSettings?: () => void
+}
+
+export default function Toolbar(props: ToolbarProps) {
     const PRIMARY_BUTTONS = ["refresh", "export", "filter"]
     const SECONDARY_BUTTONS = ["new", "delete", "settings"]
 
     const [activeButtons, setActiveButtons] = useState<string[]>(PRIMARY_BUTTONS)
     const isExpanded = activeButtons.length > PRIMARY_BUTTONS.length
 
-    const { isSettingsOpen, setIsSettingsOpen, settingsButtonRef } = useTableContext();
+    const { isSettingsOpen, setIsSettingsOpen, settingsButtonRef, isFilterOpen, setIsFilterOpen, setFilterParams } = useTableContext();
 
     return (
-        <TableProvider>
+        <div className="flex items-center justify-between pl-2 pt-2 text-right mb-2">
+            <div className="text-sm font-semibold text-gray-700">
+                {props.title}
+            </div>
             <div className="flex items-center gap-1 overflow-visible">
                 <div className={`flex items-center gap-1 transition-transform duration-300 ${isExpanded ? '-translate-x-1' : 'translate-x-0'}`}>
-                    {props.onRefresh && activeButtons.includes("refresh") && (
+                    {props.onRefresh && (
                         <button
                             key="refresh"
                             onClick={() => { }}
@@ -29,7 +41,7 @@ export default function TableToolbar(props: TableProps) {
                             </span>
                         </button>
                     )}
-                    {props.onExport && activeButtons.includes("export") && (
+                    {props.onExport && (
                         <button
                             key="export"
                             onClick={() => { }}
@@ -42,13 +54,14 @@ export default function TableToolbar(props: TableProps) {
                             </span>
                         </button>
                     )}
-                    {props.onFilter && activeButtons.includes("filter") && (
+                    {props.onFilter && (
                         <button
                             key="filter"
                             onClick={() => {
                                 setIsFilterOpen(!isFilterOpen)
-                                setFilters({})
-                                setOpenFilterKey(null)
+                                if (!isFilterOpen) {
+                                    setFilterParams({})
+                                }
                             }}
                             className="inline-flex items-center bg-yellow-500 text-white px-2 py-2 h-8 rounded-md transition-all duration-200 group hover:bg-yellow-600"
                             aria-label="Filtrele"
@@ -64,7 +77,7 @@ export default function TableToolbar(props: TableProps) {
                 <div
                     className={`flex items-center gap-1 overflow-visible transition-all duration-300 ${isExpanded ? 'max-w-[999px] opacity-100 translate-x-0 border-l pl-2 border-slate-200' : 'max-w-0 opacity-0 translate-x-4 pl-0 border-l-0'}`}
                 >
-                    {props.onNew && (
+                    {props.onNew && activeButtons.includes("new") && (
                         <button
                             key="new"
                             onClick={() => { }}
@@ -77,7 +90,7 @@ export default function TableToolbar(props: TableProps) {
                             </span>
                         </button>
                     )}
-                    {props.onDelete && (
+                    {props.onDelete && activeButtons.includes("delete") && (
                         <button
                             key="delete"
                             onClick={() => { }}
@@ -90,7 +103,7 @@ export default function TableToolbar(props: TableProps) {
                             </span>
                         </button>
                     )}
-                    {(
+                    {activeButtons.includes("settings") && (
                         <div className="relative inline-block">
                             <button
                                 key="settings"
@@ -126,6 +139,6 @@ export default function TableToolbar(props: TableProps) {
                     <FaEllipsis className="w-3 h-3" />
                 </button>
             </div>
-        </TableProvider>
+        </div>
     )
 }
