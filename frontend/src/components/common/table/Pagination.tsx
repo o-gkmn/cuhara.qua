@@ -25,11 +25,12 @@ export default function Pagination(props: PaginationProps) {
     }
 
     return (
-        <div className="flex justify-end items-center gap-1 pt-4 dasdas">
-        <div className="flex items-center mr-auto ml-2 text-xs">
-            <span className="text-teal-700 text-sm">Sayfa Başına</span>
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-1 pt-4 px-2 sm:px-0">
+        <div className="flex items-center text-xs order-2 sm:order-1">
+            <span className="text-teal-700 text-xs sm:text-sm hidden sm:inline">Sayfa Başına</span>
+            <span className="text-teal-700 text-xs sm:hidden">Sayfa/</span>
             <select
-                className="text-teal-700 hover:bg-gray-100 rounded-md p-1 ml-2 disabled:opacity-40 disabled:cursor-not-allowed border border-teal-700"
+                className="text-teal-700 hover:bg-gray-100 rounded-md p-1 ml-1 sm:ml-2 disabled:opacity-40 disabled:cursor-not-allowed border border-teal-700 text-xs"
                 onChange={(e) => {
                     setPage(1)
                     setPageSize(Number(e.target.value))
@@ -41,25 +42,26 @@ export default function Pagination(props: PaginationProps) {
                 ))}
             </select>
         </div>
+        <div className="flex items-center gap-1 order-1 sm:order-2">
         <button
-            className="text-teal-700 hover:bg-gray-100 rounded-md p-1 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="text-teal-700 hover:bg-gray-100 rounded-md p-1 sm:p-1 disabled:opacity-40 disabled:cursor-not-allowed"
             disabled={page === 1}
             onClick={() => {
                 props.onPageChange?.(1)
                 setPage(1)
             }}
         >
-            <FaAngleDoubleLeft className="w-4 h-4" />
+            <FaAngleDoubleLeft className="w-3 h-3 sm:w-4 sm:h-4" />
         </button>
         <button
-            className="text-teal-700 hover:bg-gray-100 rounded-md p-1 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="text-teal-700 hover:bg-gray-100 rounded-md p-1 sm:p-1 disabled:opacity-40 disabled:cursor-not-allowed"
             disabled={page === 1}
             onClick={() => {
                 props.onPageChange?.(page - 1)
                 setPage(page - 1)
             }}
         >
-            <FaAngleLeft className="w-4 h-4" />
+            <FaAngleLeft className="w-3 h-3 sm:w-4 sm:h-4" />
         </button>
         {pageWindow().map((p) => (
             <button
@@ -68,48 +70,51 @@ export default function Pagination(props: PaginationProps) {
                     props.onPageChange?.(p)
                     setPage(p)
                 }}
-                className={`hover:bg-gray-100 rounded-md disabled:opacity-40 disabled:cursor-not-allowed w-6 h-6 ${p === page ? 'bg-teal-600 text-white hover:bg-teal-600' : ''}`}
+                className={`hover:bg-gray-100 rounded-md disabled:opacity-40 disabled:cursor-not-allowed w-6 h-6 sm:w-7 sm:h-7 text-xs sm:text-sm ${p === page ? 'bg-teal-600 text-white hover:bg-teal-600' : ''}`}
             >
                 {p}
             </button>
         ))}
         <button
-            className="text-teal-700 hover:bg-gray-100 rounded-md p-1 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="text-teal-700 hover:bg-gray-100 rounded-md p-1 sm:p-1 disabled:opacity-40 disabled:cursor-not-allowed"
             disabled={page === totalPage}
             onClick={() => {
                 props.onPageChange?.(page + 1)
                 setPage(page + 1)
             }}
         >
-            <FaAngleRight className="w-4 h-4" />
+            <FaAngleRight className="w-3 h-3 sm:w-4 sm:h-4" />
         </button>
         <button
-            className="text-teal-700 hover:bg-gray-100 rounded-md p-1 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="text-teal-700 hover:bg-gray-100 rounded-md p-1 sm:p-1 disabled:opacity-40 disabled:cursor-not-allowed"
             disabled={page === totalPage}
             onClick={() => {
                 props.onPageChange?.(totalPage ?? 1)
                 setPage(totalPage ?? 1)
             }}
         >
-            <FaAngleDoubleRight className="w-4 h-4" />
+            <FaAngleDoubleRight className="w-3 h-3 sm:w-4 sm:h-4" />
         </button>
-        <span className="text-teal-700 ml-3 text-sm">Sayfa</span>
-        <input
-            className="text-teal-700 hover:bg-gray-100 rounded-md p-1 mr-3 disabled:opacity-40 disabled:cursor-not-allowed border border-teal-700 text-xs text-center"
-            type="number"
-            value={page}
-            min={1}
-            max={totalPage ?? 1}
-            onWheel={e => (e.target as HTMLInputElement).blur()}
-            onChange={(e) => {
-                const raw = Number(e.target.value)
-                if (!Number.isFinite(raw)) return
-                const maxPage = totalPage ?? 1
-                const clamped = Math.max(1, Math.min(raw, maxPage))
-                props.onPageChange?.(clamped)
-                setPage(clamped)
-            }}
-        />
+        <div className="flex items-center gap-1 sm:gap-2">
+            <span className="text-teal-700 text-xs sm:text-sm hidden sm:inline">Sayfa</span>
+            <input
+                className="text-teal-700 hover:bg-gray-100 rounded-md p-1 disabled:opacity-40 disabled:cursor-not-allowed border border-teal-700 text-xs text-center w-12 sm:w-16"
+                type="number"
+                value={page}
+                min={1}
+                max={totalPage ?? 1}
+                onWheel={e => (e.target as HTMLInputElement).blur()}
+                onChange={(e) => {
+                    const raw = Number(e.target.value)
+                    if (!Number.isFinite(raw)) return
+                    const maxPage = totalPage ?? 1
+                    const clamped = Math.max(1, Math.min(raw, maxPage))
+                    props.onPageChange?.(clamped)
+                    setPage(clamped)
+                }}
+            />
+        </div>
+        </div>
     </div>
     )
 }

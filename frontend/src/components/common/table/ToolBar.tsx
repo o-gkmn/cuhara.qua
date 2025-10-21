@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { FaArrowDown, FaArrowRotateRight, FaEllipsis, FaFilter, FaGear, FaPlus, FaTrash } from "react-icons/fa6"
 import { useTableContext } from "../../../context/TableContext"
+import SettingsPopover from "./SettingsPopover"
 
 export interface ToolbarProps {
     title?: string
@@ -22,21 +23,34 @@ export default function Toolbar(props: ToolbarProps) {
     const { isSettingsOpen, setIsSettingsOpen, settingsButtonRef, isFilterOpen, setIsFilterOpen, setFilterParams } = useTableContext();
 
     return (
-        <div className="flex items-center justify-between pl-2 pt-2 text-right mb-2">
-            <div className="text-sm font-semibold text-gray-700">
+        <div className={`
+            flex
+            flex-col sm:flex-row
+            items-start sm:items-center 
+            justify-between 
+            pl-2 
+            pt-2 
+            text-right 
+            mb-2 
+            gap-2
+        `}>
+            <SettingsPopover />
+
+            <div className="hidden sm:block text-sm font-semibold text-gray-700">
                 {props.title}
             </div>
-            <div className="flex items-center gap-1 overflow-visible">
+
+            <div className="flex items-center gap-1 overflow-visible order-2 sm:order-2 w-full sm:w-auto justify-end">
                 <div className={`flex items-center gap-1 transition-transform duration-300 ${isExpanded ? '-translate-x-1' : 'translate-x-0'}`}>
                     {props.onRefresh && (
                         <button
                             key="refresh"
                             onClick={() => { }}
-                            className="inline-flex items-center bg-sky-600 text-white px-2 py-2 h-8 rounded-md transition-all duration-200 group hover:bg-sky-700"
+                            className="inline-flex items-center bg-sky-600 text-white px-1.5 sm:px-2 py-1.5 sm:py-2 h-7 sm:h-8 rounded-md transition-all duration-200 group hover:bg-sky-700"
                             aria-label="Yenile"
                         >
-                            <FaArrowRotateRight className="w-3 h-3" />
-                            <span className="ml-0 max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-all duration-200 text-sm group-hover:ml-2 group-hover:max-w-[80px] group-hover:opacity-100">
+                            <FaArrowRotateRight className="w-3 h-3 sm:w-3 sm:h-3" />
+                            <span className="ml-0 max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-all duration-200 text-xs sm:text-sm group-hover:ml-1 sm:group-hover:ml-2 group-hover:max-w-[60px] sm:group-hover:max-w-[80px] group-hover:opacity-100">
                                 Yenile
                             </span>
                         </button>
@@ -45,11 +59,11 @@ export default function Toolbar(props: ToolbarProps) {
                         <button
                             key="export"
                             onClick={() => { }}
-                            className="inline-flex items-center bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-2 h-8 rounded-md transition-all duration-200 group"
+                            className="inline-flex items-center bg-emerald-600 hover:bg-emerald-700 text-white px-1.5 sm:px-2 py-1.5 sm:py-2 h-7 sm:h-8 rounded-md transition-all duration-200 group"
                             aria-label="Dışa Aktar"
                         >
-                            <FaArrowDown className="w-3 h-3" />
-                            <span className="ml-0 max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-all duration-200 text-sm group-hover:ml-2 group-hover:max-w-[80px] group-hover:opacity-100">
+                            <FaArrowDown className="w-3 h-3 sm:w-3 sm:h-3" />
+                            <span className="ml-0 max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-all duration-200 text-xs sm:text-sm group-hover:ml-1 sm:group-hover:ml-2 group-hover:max-w-[60px] sm:group-hover:max-w-[80px] group-hover:opacity-100">
                                 Dışa Aktar
                             </span>
                         </button>
@@ -63,11 +77,11 @@ export default function Toolbar(props: ToolbarProps) {
                                     setFilterParams({})
                                 }
                             }}
-                            className="inline-flex items-center bg-yellow-500 text-white px-2 py-2 h-8 rounded-md transition-all duration-200 group hover:bg-yellow-600"
+                            className="inline-flex items-center bg-yellow-500 text-white px-1.5 sm:px-2 py-1.5 sm:py-2 h-7 sm:h-8 rounded-md transition-all duration-200 group hover:bg-yellow-600"
                             aria-label="Filtrele"
                         >
-                            <FaFilter className="w-3 h-3" />
-                            <span className={`overflow-hidden whitespace-nowrap transition-all duration-200 text-sm ${isFilterOpen ? 'ml-2 max-w-[80px] opacity-100' : 'ml-0 max-w-0 opacity-0'} group-hover:ml-2 group-hover:max-w-[80px] group-hover:opacity-100`}>
+                            <FaFilter className="w-3 h-3 sm:w-3 sm:h-3" />
+                            <span className={`overflow-hidden whitespace-nowrap transition-all duration-200 text-xs sm:text-sm ${isFilterOpen ? 'ml-1 sm:ml-2 max-w-[60px] sm:max-w-[80px] opacity-100' : 'ml-0 max-w-0 opacity-0'} group-hover:ml-1 sm:group-hover:ml-2 group-hover:max-w-[60px] sm:group-hover:max-w-[80px] group-hover:opacity-100`}>
                                 Filtrele
                             </span>
                         </button>
@@ -75,17 +89,17 @@ export default function Toolbar(props: ToolbarProps) {
                 </div>
 
                 <div
-                    className={`flex items-center gap-1 overflow-visible transition-all duration-300 ${isExpanded ? 'max-w-[999px] opacity-100 translate-x-0 border-l pl-2 border-slate-200' : 'max-w-0 opacity-0 translate-x-4 pl-0 border-l-0'}`}
+                    className={`flex items-center gap-1 overflow-visible transition-all duration-300 ${isExpanded ? 'max-w-[999px] opacity-100 translate-x-0 border-l pl-1 sm:pl-2 border-slate-200' : 'max-w-0 opacity-0 translate-x-2 sm:translate-x-4 pl-0 border-l-0'}`}
                 >
                     {props.onNew && activeButtons.includes("new") && (
                         <button
                             key="new"
                             onClick={() => { }}
-                            className="inline-flex items-center bg-teal-600 hover:bg-teal-700 text-white px-2 py-2 h-8 rounded-md transition-all duration-200 group"
+                            className="inline-flex items-center bg-teal-600 hover:bg-teal-700 text-white px-1.5 sm:px-2 py-1.5 sm:py-2 h-7 sm:h-8 rounded-md transition-all duration-200 group"
                             aria-label="Ekle"
                         >
-                            <FaPlus className="w-3 h-3" />
-                            <span className="ml-0 max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-all duration-200 text-sm group-hover:ml-2 group-hover:max-w-[80px] group-hover:opacity-100">
+                            <FaPlus className="w-3 h-3 sm:w-3 sm:h-3" />
+                            <span className="ml-0 max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-all duration-200 text-xs sm:text-sm group-hover:ml-1 sm:group-hover:ml-2 group-hover:max-w-[60px] sm:group-hover:max-w-[80px] group-hover:opacity-100">
                                 Yeni
                             </span>
                         </button>
@@ -94,11 +108,11 @@ export default function Toolbar(props: ToolbarProps) {
                         <button
                             key="delete"
                             onClick={() => { }}
-                            className="inline-flex items-center bg-rose-600 hover:bg-rose-700 text-white px-2 py-2 h-8 rounded-md transition-all duration-200 group"
+                            className="inline-flex items-center bg-rose-600 hover:bg-rose-700 text-white px-1.5 sm:px-2 py-1.5 sm:py-2 h-7 sm:h-8 rounded-md transition-all duration-200 group"
                             aria-label="Sil"
                         >
-                            <FaTrash className="w-3 h-3" />
-                            <span className="ml-0 max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-all duration-200 text-sm group-hover:ml-2 group-hover:max-w-[80px] group-hover:opacity-100">
+                            <FaTrash className="w-3 h-3 sm:w-3 sm:h-3" />
+                            <span className="ml-0 max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-all duration-200 text-xs sm:text-sm group-hover:ml-1 sm:group-hover:ml-2 group-hover:max-w-[60px] sm:group-hover:max-w-[80px] group-hover:opacity-100">
                                 Sil
                             </span>
                         </button>
@@ -112,17 +126,18 @@ export default function Toolbar(props: ToolbarProps) {
                                 onClick={() => {
                                     setIsSettingsOpen(!isSettingsOpen)
                                 }}
-                                className="inline-flex items-center bg-slate-500 text-white px-2 py-2 h-8 rounded-md transition-all duration-200 group hover:bg-slate-600"
+                                className="inline-flex items-center bg-slate-500 text-white px-1.5 sm:px-2 py-1.5 sm:py-2 h-7 sm:h-8 rounded-md transition-all duration-200 group hover:bg-slate-600"
                                 aria-label="Ayarlar"
                             >
-                                <FaGear className="w-3 h-3" />
-                                <span className={`overflow-hidden whitespace-nowrap transition-all duration-200 text-sm ${isSettingsOpen ? 'ml-2 max-w-[80px] opacity-100' : 'ml-0 max-w-0 opacity-0'} group-hover:ml-2 group-hover:max-w-[80px] group-hover:opacity-100`}>
+                                <FaGear className="w-3 h-3 sm:w-3 sm:h-3" />
+                                <span className={`overflow-hidden whitespace-nowrap transition-all duration-200 text-xs sm:text-sm ${isSettingsOpen ? 'ml-1 sm:ml-2 max-w-[60px] sm:max-w-[80px] opacity-100' : 'ml-0 max-w-0 opacity-0'} group-hover:ml-1 sm:group-hover:ml-2 group-hover:max-w-[60px] sm:group-hover:max-w-[80px] group-hover:opacity-100`}>
                                     Ayarlar
                                 </span>
                             </button>
                         </div>
                     )}
                 </div>
+
                 <button
                     key="other"
                     onClick={() => {
@@ -133,10 +148,10 @@ export default function Toolbar(props: ToolbarProps) {
                             setActiveButtons(PRIMARY_BUTTONS)
                         }
                     }}
-                    className="inline-flex items-center z-0 bg-slate-500 text-white px-2 py-2 h-8 rounded-md transition-all duration-200 group hover:bg-slate-600"
+                    className="inline-flex items-center z-0 bg-slate-500 text-white px-1.5 sm:px-2 py-1.5 sm:py-2 h-7 sm:h-8 rounded-md transition-all duration-200 group hover:bg-slate-600"
                     aria-label="Diğer İşlemler"
                 >
-                    <FaEllipsis className="w-3 h-3" />
+                    <FaEllipsis className="w-3 h-3 sm:w-3 sm:h-3" />
                 </button>
             </div>
         </div>

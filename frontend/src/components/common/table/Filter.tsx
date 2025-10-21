@@ -106,24 +106,30 @@ export default function Filter({ onFilter }: { onFilter: (query: string) => void
                 const containerRect = container?.getBoundingClientRect()
 
                 if (tableRect && containerRect) {
-                    const popoverWidth = 256 // w-64 = 16rem = 256px
+                    const popoverWidth = window.innerWidth < 640 ? Math.min(280, window.innerWidth - 20) : 256 // Responsive width
+                    const isMobile = window.innerWidth < 640
 
-                    let leftPosition = rect.left - tableRect.left - 100
+                    let leftPosition = rect.left - tableRect.left - (isMobile ? 50 : 100)
 
                     // Sol kenarda ise popover'ı sağa kaydır
                     if (leftPosition < 0) {
-                        leftPosition = 10
+                        leftPosition = isMobile ? 5 : 10
                     }
 
                     // Sağ kenarda ise popover'ı sola kaydır
                     const rightEdge = leftPosition + popoverWidth
                     const tableWidth = tableRect.width
                     if (rightEdge > tableWidth) {
-                        leftPosition = tableWidth - popoverWidth - 10
+                        leftPosition = tableWidth - popoverWidth - (isMobile ? 5 : 10)
+                    }
+
+                    // Mobile'da center positioning
+                    if (isMobile) {
+                        leftPosition = Math.max(5, Math.min(leftPosition, tableWidth - popoverWidth - 5))
                     }
 
                     setPosition({
-                        top: 5, // Just below the header row
+                        top: isMobile ? 10 : 5, // More space on mobile
                         left: leftPosition
                     })
                 }
@@ -206,8 +212,8 @@ export default function Filter({ onFilter }: { onFilter: (query: string) => void
                     className={`
                         w-full 
                         border border-slate-200 
-                        rounded p-1
-                        text-sm
+                        rounded p-1.5 sm:p-1
+                        text-xs sm:text-sm
                         ${filterParams[activeFilterColumn?.key || '']?.operator === 'empty'
                             || filterParams[activeFilterColumn?.key || '']?.operator === 'notEmpty' ? 'hidden' : ''
                         }
@@ -215,7 +221,7 @@ export default function Filter({ onFilter }: { onFilter: (query: string) => void
                     autoFocus
                 />
                 <select
-                    className="w-full border border-slate-200 rounded p-1 text-sm"
+                    className="w-full border border-slate-200 rounded p-1.5 sm:p-1 text-xs sm:text-sm"
                     value={filterParams[activeFilterColumn?.key || '']?.operator || ''}
                     onChange={(e) => {
                         if (e.target.value) {
@@ -245,7 +251,7 @@ export default function Filter({ onFilter }: { onFilter: (query: string) => void
             <input
                 type="number"
                 placeholder="Değer giriniz"
-                className="w-full border border-slate-200 rounded p-1 text-sm"
+                className="w-full border border-slate-200 rounded p-1.5 sm:p-1 text-xs sm:text-sm"
                 value={filterParams[activeFilterColumn?.key || '']?.value as number || ''}
                 onChange={(e) => {
                     setFilterParams(prev => ({
@@ -271,7 +277,7 @@ export default function Filter({ onFilter }: { onFilter: (query: string) => void
                         }))
                     }
                 }}
-                className="w-full border border-slate-200 rounded p-1 text-sm"
+                className="w-full border border-slate-200 rounded p-1.5 sm:p-1 text-xs sm:text-sm"
             >
                 <option value="">Operatör seçin</option>
                 {activeFilterColumn?.filter?.operators?.map((operator) => (
@@ -288,7 +294,7 @@ export default function Filter({ onFilter }: { onFilter: (query: string) => void
             <input
                 type="date"
                 placeholder="Değer giriniz"
-                className="w-full border border-slate-200 rounded p-1 text-sm"
+                className="w-full border border-slate-200 rounded p-1.5 sm:p-1 text-xs sm:text-sm"
                 value={filterParams[activeFilterColumn?.key || '']?.value as string || ''}
                 onChange={(e) => {
                     setFilterParams(prev => ({
@@ -306,7 +312,7 @@ export default function Filter({ onFilter }: { onFilter: (query: string) => void
                     <input
                         type="date"
                         placeholder="Değer giriniz"
-                        className="w-full border border-slate-200 rounded p-1 text-sm"
+                        className="w-full border border-slate-200 rounded p-1.5 sm:p-1 text-xs sm:text-sm"
                         value={filterParams[activeFilterColumn?.key || '']?.value as string || ''}
                         onChange={(e) => {
                             setFilterParams(prev => ({
@@ -334,7 +340,7 @@ export default function Filter({ onFilter }: { onFilter: (query: string) => void
                         }))
                     }
                 }}
-                className="w-full border border-slate-200 rounded p-1 text-sm"
+                className="w-full border border-slate-200 rounded p-1.5 sm:p-1 text-xs sm:text-sm"
             >
                 <option value="">Operatör seçin</option>
                 {activeFilterColumn?.filter?.operators?.map((operator) => (
@@ -361,7 +367,7 @@ export default function Filter({ onFilter }: { onFilter: (query: string) => void
                         }))
                     }
                 }}
-                className="w-full border border-slate-200 rounded p-1 text-sm"
+                className="w-full border border-slate-200 rounded p-1.5 sm:p-1 text-xs sm:text-sm"
             >
                 <option value="">Operatör seçin</option>
                 {activeFilterColumn?.filter?.operators?.map((operator) => (
@@ -388,7 +394,7 @@ export default function Filter({ onFilter }: { onFilter: (query: string) => void
                         }))
                     }
                 }}
-                className="w-full border border-slate-200 rounded p-1 text-sm"
+                className="w-full border border-slate-200 rounded p-1.5 sm:p-1 text-xs sm:text-sm"
             >
                 <option value="">Değer seçin</option>
                 {
@@ -412,7 +418,7 @@ export default function Filter({ onFilter }: { onFilter: (query: string) => void
                         }))
                     }
                 }}
-                className="w-full border border-slate-200 rounded p-1 text-sm"
+                className="w-full border border-slate-200 rounded p-1.5 sm:p-1 text-xs sm:text-sm"
             >
                 <option value="">Operatör seçin</option>
                 {activeFilterColumn?.filter?.operators?.map((operator) => (
@@ -438,19 +444,19 @@ export default function Filter({ onFilter }: { onFilter: (query: string) => void
                         left: `${position.left}px`,
                         zIndex: 9999
                     }}
-                    className="bg-white text-slate-700 border border-slate-200 rounded-md shadow-lg p-4 w-64"
+                    className="bg-white text-slate-700 border border-slate-200 rounded-md shadow-lg p-3 sm:p-4 w-72 sm:w-64 max-w-[calc(100vw-20px)] sm:max-w-none"
                     onMouseDown={(e) => e.stopPropagation()}
                 >
                     <div className="mb-3">
-                        <h4 className="text-sm font-medium text-slate-800 mb-2">
+                        <h4 className="text-xs sm:text-sm font-medium text-slate-800 mb-2">
                             {activeFilterColumn.label} - Filtre
                         </h4>
                         {renderFilter()}
                     </div>
 
-                    <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+                    <div className="flex flex-col sm:flex-row justify-end gap-2 pt-3 border-t border-slate-100">
                         <button
-                            className="px-3 py-1 text-xs text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded transition-colors"
+                            className="px-3 py-1.5 sm:py-1 text-xs text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded transition-colors"
                             onClick={() => {
                                 setActiveFilterColumn(null)
                                 clearFilter(activeFilterColumn?.key)
@@ -459,7 +465,7 @@ export default function Filter({ onFilter }: { onFilter: (query: string) => void
                             İptal
                         </button>
                         <button
-                            className="px-3 py-1 text-xs text-orange-600 hover:text-orange-800 hover:bg-orange-50 rounded transition-colors"
+                            className="px-3 py-1.5 sm:py-1 text-xs text-orange-600 hover:text-orange-800 hover:bg-orange-50 rounded transition-colors"
                             onClick={() => {
                                 clearFilter(activeFilterColumn?.key)
                             }}
@@ -467,7 +473,7 @@ export default function Filter({ onFilter }: { onFilter: (query: string) => void
                             Sıfırla
                         </button>
                         <button
-                            className="px-3 py-1 text-xs bg-teal-600 text-white hover:bg-teal-700 rounded transition-colors"
+                            className="px-3 py-1.5 sm:py-1 text-xs bg-teal-600 text-white hover:bg-teal-700 rounded transition-colors"
                             onClick={() => {
                                 const query = applyFilter()
                                 onFilter(query)
