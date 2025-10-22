@@ -1,7 +1,6 @@
 
 import Table from "../components/common/table/core/Table";
 import type { TableColumnProps, TableProps } from "../components/common/table/types/types";
-import MainLayout from "../components/layouts/MainLayout";
 import { TableProvider } from "../context/TableContext";
 import { useUsers } from "../hooks/useUsers";
 
@@ -117,39 +116,33 @@ export default function TablePage() {
     // Show loading state
     if (loading) {
         return (
-            <MainLayout>
-                <div className="flex items-center justify-center h-64">
-                    <div className="text-lg">Loading users...</div>
-                </div>
-            </MainLayout>
+            <div className="flex items-center justify-center h-64">
+                <div className="text-lg">Loading users...</div>
+            </div>
         )
     }
 
     // Show error state
     if (error) {
         return (
-            <MainLayout>
-                <div className="flex items-center justify-center h-64">
-                    <div className="text-center">
-                        <div className="text-red-600 text-lg mb-4">Error loading users</div>
-                        <div className="text-gray-600 mb-4">{error}</div>
-                        <button 
-                            onClick={refetch}
-                            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                        >
-                            Try Again
-                        </button>
-                    </div>
+            <div className="flex items-center justify-center h-64">
+                <div className="text-center">
+                    <div className="text-red-600 text-lg mb-4">Error loading users</div>
+                    <div className="text-gray-600 mb-4">{error}</div>
+                    <button 
+                        onClick={refetch}
+                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                        Try Again
+                    </button>
                 </div>
-            </MainLayout>
+            </div>
         )
     }
 
     return (
-        <MainLayout>
-            <TableProvider columns={columns as TableColumnProps[]}>
-                <Table {...tableProps} />
-            </TableProvider>
-        </MainLayout >
+        <TableProvider columns={columns as TableColumnProps[]}>
+            <Table {...tableProps} />
+        </TableProvider>
     )
 }

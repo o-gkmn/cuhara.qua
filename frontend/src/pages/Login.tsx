@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import MainLayout from "../components/layouts/MainLayout";
 import { AuthService } from "../api";
 import type { loginRequest } from "../api";
 import { setAuthToken } from "../utils/auth";
@@ -62,88 +61,86 @@ function Login() {
     };
 
     return (
-        <MainLayout>
-            <div className="flex flex-col items-center justify-center min-h-full px-4 py-8">
-                <div className="w-full max-w-md">
-                    <div className="bg-white rounded-lg shadow-lg p-8">
-                        <div className="text-center mb-8">
-                            <h1 className="text-3xl font-bold text-gray-900 mb-2">Giriş Yap</h1>
-                            <p className="text-gray-600">Hesabınıza giriş yapın</p>
+        <div className="flex items-center justify-center min-h-screen w-full ">
+            <div className="w-full max-w-md">
+                <div className="bg-slate-800/60 border border-slate-700 rounded-lg shadow-xl p-8 backdrop-blur">
+                    <div className="text-center mb-8">
+                        <h1 className="text-3xl font-bold text-slate-100 mb-2">Giriş Yap</h1>
+                        <p className="text-slate-300">Hesabınıza giriş yapın</p>
+                    </div>
+
+                    {error && (
+                        <div className="mb-4 p-3 bg-red-900/50 border border-red-500 text-red-200 rounded">
+                            {error}
                         </div>
+                    )}
 
-                        {error && (
-                            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-                                {error}
-                            </div>
-                        )}
-
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            <div>
-                                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Email
-                                </label>
-                                <input
-                                    type="email"
-                                    id="email"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleInputChange}
-                                    placeholder="ornek@email.com"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    disabled={loading}
-                                />
-                            </div>
-
-                            <div>
-                                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Şifre
-                                </label>
-                                <input
-                                    type="password"
-                                    id="password"
-                                    name="password"
-                                    value={formData.password}
-                                    onChange={handleInputChange}
-                                    placeholder="Şifrenizi giriniz"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    disabled={loading}
-                                />
-                            </div>
-
-                            <button
-                                type="submit"
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div>
+                            <label htmlFor="email" className="block text-sm font-medium text-slate-200 mb-2">
+                                Email
+                            </label>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleInputChange}
+                                placeholder="ornek@email.com"
+                                className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md shadow-sm text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                                 disabled={loading}
-                                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {loading ? (
-                                    <div className="flex items-center">
-                                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
-                                        Giriş yapılıyor...
-                                    </div>
-                                ) : (
-                                    "Giriş Yap"
-                                )}
-                            </button>
-                        </form>
-
-                        <div className="mt-6 text-center">
-                            <p className="text-sm text-gray-600">
-                                Hesabınız yok mu?{" "}
-                                <button 
-                                    onClick={() => navigate("/register")}
-                                    className="font-medium text-blue-600 hover:text-blue-500"
-                                >
-                                    Kayıt olun
-                                </button>
-                            </p>
+                            />
                         </div>
+
+                        <div>
+                            <label htmlFor="password" className="block text-sm font-medium text-slate-200 mb-2">
+                                Şifre
+                            </label>
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                value={formData.password}
+                                onChange={handleInputChange}
+                                placeholder="Şifrenizi giriniz"
+                                className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md shadow-sm text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                disabled={loading}
+                            />
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-emerald-950 bg-emerald-500 hover:bg-emerald-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {loading ? (
+                                <div className="flex items-center">
+                                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Giriş yapılıyor...
+                                </div>
+                            ) : (
+                                "Giriş Yap"
+                            )}
+                        </button>
+                    </form>
+
+                    <div className="mt-6 text-center">
+                        <p className="text-sm text-slate-300">
+                            Hesabınız yok mu?{" "}
+                            <button 
+                                onClick={() => navigate("/register")}
+                                className="font-medium text-emerald-400 hover:text-emerald-300"
+                            >
+                                Kayıt olun
+                            </button>
+                        </p>
                     </div>
                 </div>
             </div>
-        </MainLayout>
+        </div>
     )
 }
 

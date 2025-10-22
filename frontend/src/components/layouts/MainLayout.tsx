@@ -1,12 +1,13 @@
-import Footer from "./Footer";
+
 import Navbar from "./Navbar";
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
     return (
-        <div className="bg-gray-100">
-            <Navbar/>
-            <main className="pt-14 pb-14 min-h-[calc(100vh-7rem)]">{children}</main>
-            <Footer/>
+        <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-900 via-slate-900/95 to-slate-900/90">
+            <Navbar />
+            <main className="flex-1">
+                {children}
+            </main>
         </div>
     )
 }
