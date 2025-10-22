@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FaGripVertical, FaArrowUp, FaArrowDown } from "react-icons/fa6";
-import type { TableColumnProps } from "../Table";
-import { useTableContext } from "../../../context/TableContext";
+import type { TableColumnProps } from "../types/types";
+import { useTableContext } from "../../../../context/TableContext";
 
 export default function SettingsPopover() {
     const [settingsPopoverRef, setSettingsPopoverRef] = useState<HTMLDivElement | null>(null)
@@ -123,7 +123,7 @@ export default function SettingsPopover() {
             className={`
                 sm:fixed
                 w-full sm:w-56 
-                bg-white 
+                sm:bg-white bg-gray-100 
                 border 
                 border-slate-200 
                 rounded-md 
@@ -135,7 +135,7 @@ export default function SettingsPopover() {
             `}
         >
             <div className="text-xs sm:text-sm text-slate-700 font-semibold mb-2">Sütunlar</div>
-            <div className="flex flex-col gap-1 text-left text-xs sm:text-sm text-slate-700 bg-gray-100 rounded-md p-2">
+            <div className="flex flex-col gap-1 text-left text-xs sm:text-sm text-slate-700 sm:bg-gray-100 bg-white rounded-md p-2">
                 {columns.map((column) => {
                     return (
                         <div

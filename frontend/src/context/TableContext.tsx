@@ -1,8 +1,8 @@
 /* eslint-disable react-refresh/only-export-components */
 
 import { createContext, useContext, useRef, useState } from "react";
-import type { TableColumnProps } from "../components/common/Table";
-import type { FilterParam } from "../components/common/table/Filter";
+import type { TableColumnProps } from "../components/common/table/types/types";
+import type { FilterParam } from "../components/common/table/types/types";
 
 interface TableContextValue {
     columns: TableColumnProps[]

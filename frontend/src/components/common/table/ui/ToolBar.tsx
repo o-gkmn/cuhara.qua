@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { FaArrowDown, FaArrowRotateRight, FaEllipsis, FaFilter, FaGear, FaPlus, FaTrash } from "react-icons/fa6"
-import { useTableContext } from "../../../context/TableContext"
+import { useTableContext } from "../../../../context/TableContext"
 import SettingsPopover from "./SettingsPopover"
 
 export interface ToolbarProps {
@@ -25,7 +25,7 @@ export default function Toolbar(props: ToolbarProps) {
     return (
         <div className={`
             flex
-            flex-col sm:flex-row
+            flex-col-reverse sm:flex-row
             items-start sm:items-center 
             justify-between 
             pl-2 
